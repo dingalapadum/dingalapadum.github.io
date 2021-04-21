@@ -1,0 +1,20 @@
+header {
+    background-color: black;
+    color: white;
+}
+
+body {
+    background-color: lightslategray;
+}
+
+p {
+    color: white;
+}
+
+aside {
+    float: left;
+}
+
+a:hover {
+    color: white;
+}

@@ -1,0 +1,18 @@
+.div-box {
+    background-color: royalblue;
+    color: black;
+}
+
+#intro {
+    background-color: salmon;
+}
+
+#intro:hover {
+    background-color: black;
+    color: white;
+}
+
+#home:visited {
+    color: red;
+}
+
