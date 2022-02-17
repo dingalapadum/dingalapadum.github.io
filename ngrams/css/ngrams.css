@@ -1,3 +1,10 @@
-blockquote footer {
-    font-style: italic;
+#nav {
+    padding: 0.5em 1em;
+}
+
+#themeswitcher {
+  height: 1.5em;
+  width: auto;
+  align-self: flex-end;
+  margin-left: auto;
 }

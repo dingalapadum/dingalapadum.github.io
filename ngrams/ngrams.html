@@ -3,12 +3,12 @@
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]>      <html class="no-js"> <![endif]-->
-<html>
+<html data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="description" content="N-Grams and Markov-Chains" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />  
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
       rel="stylesheet"
       href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css"
@@ -17,48 +17,65 @@
     <title>N-Grams</title>
   </head>
   <body>
-    <!--[if lt IE 7]>
+    <!--[if lt IE 7]
       <p class="browsehappy">
         You are using an <strong>outdated</strong> browser. Please
         <a href="#">upgrade your browser</a> to improve your experience.
       </p>
     <![endif]-->
+    <nav id="nav">
+    <img
+        src="resources/light.png"
+        onclick="switchLights()"
+        id="themeswitcher"
+        alt="themeswitcher"
+      />
+    </nav>
     <main class="container">
-        <!--
-      <h1 class="h1">Generating text using markov chains</h1>
+      <h1>
+        Visualization of markov chain algorithm to generate text
+      </h1>
       <p>
         We'll explore a simple model that can be used to generate. We proceed in two phases:
         <ol>
             <li>We use some text to train our model</li>
             <li>We use sample the trained model to output a random text</li>
         </ol>
-        We introduce some basic concepts 
+        
       </p>
-      <h2>What is a N-Gram</h2>
+      <h2>Basic concepts</h2>
+      <h3>What is a N-Gram</h3>
       <blockquote cite="https://en.wikipedia.org/wiki/N-gram">
         [...] an n-gram is a contiguous sequence of n items from a given sample
         of text or speech. The items can be phonemes, syllables, letters, words
         or base pairs according to the application.
         <footer>
-          <a href="https://en.wikipedia.org/wiki/N-gram">https://en.wikipedia.org/wiki/N-gram</a
-          >
+          <cite>
+            <a href="https://en.wikipedia.org/wiki/N-gram">https://en.wikipedia.org/wiki/N-gram</a>
+          </cite>
         </footer>
       </blockquote>
-
-      <ul>
-        <li>a</li>
-        <li>b</li>
-        <li>c</li>
-      </ul>
-      -->
-      <a href="#" data-theme-switcher="light">Light</a> 
-      <a href="#" data-theme-switcher="dark">Dark</a>
-      <h1 class="h1">Visualtization of markov chain algorithm to generate text</h1>
-
-
     </main>
 
-    <script src="../js/minimal-theme-switcher.js"></script>
+    <script>
+      let theme =
+        localStorage.getItem("theme") ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light");
+      switchLights();
+
+      function switchLights() {
+        theme = theme == "light" ? "dark" : "light";
+        document.getElementById("themeswitcher").src =
+          "resources/" + theme + ".png";
+        let themeswitch = theme == "light" ? "off" : "on";
+        document.getElementById("themeswitcher").title = "lights "+themeswitch;
+        document.documentElement.setAttribute("data-theme", theme);
+      }
+    </script>
+    <!--
     <script src="" async defer></script>
+    -->
   </body>
 </html>
