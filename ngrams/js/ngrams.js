@@ -13,16 +13,16 @@ function ngrams() {
 function ngramsCharacters() {
     let input = document.getElementById("ngrams-input").value;
     let n = +document.getElementById("n-select").value;
-    let ngrams = [];
-
+    let ngrams = new Map();
     if (n <= input.length){
         for (let i=0; i<(input.length-n+1); i++) {
             let currNgram = input.slice(i,i+n);
-            ngrams.push('"' +currNgram + '"');
+            let count = ngrams.get(currNgram) == null ? 0 : ngrams.get(currNgram);
+            ngrams.set(currNgram, count + 1);
         }
     }
-    let uniq = [...new Set(ngrams)];
-    output.textContent = n + "-grams: " + uniq.join(', ');
+    const ngramsArray = Array.from(ngrams).map(([ngram, count]) => (JSON.stringify({ngram, count})));
+    output.textContent = n + "-grams:" + ngramsArray.join(', ');
 }
 
 function ngramsWords() {
