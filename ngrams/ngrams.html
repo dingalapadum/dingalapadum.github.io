@@ -3,7 +3,7 @@
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]>      <html class="no-js"> <![endif]-->
-<html data-theme="dark">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -46,6 +46,7 @@
 
       <section title="Basic concepts">
         <h2>Basic concepts</h2>
+        <!-- NGRAMS -->
         <section title="ngrams">
           <h3>What is a N-Gram</h3>
           <blockquote cite="https://en.wikipedia.org/wiki/N-gram">
@@ -60,34 +61,42 @@
               </cite>
             </footer>
           </blockquote>
-          <p>Choose a N and a Gram-type and then type something </p>
-          <input
-            type="number"
-            name="n-select"
-            id="n-select"
-            min="1"
-            max="6"
-            value="2"
-            onchange="ngrams()"
-            onkeyup="if(this.value > 6) this.value = null;"
-          />
-          <select name="ngrams-type" id="ngrams-type" onchange="ngrams()">
-            <option value="characters">Characters</option>
-            <option value="words">Words</option>
-          </select>
 
-          <textarea
-            id="ngrams-input"
-            type="text"
-            oninput="ngrams()"
-            placeholder="Type something..."
-          ></textarea>
-          <p id="ngrams-output"></p>
+          <!-- Try it yourself! -->
+          <details id="ngrmas" open>
+            <summary>Try it yourself!</summary>
+            <p>Choose a N and a Gram-type and then type something</p>
+            <input
+              type="number"
+              name="n-select"
+              id="n-select"
+              min="1"
+              max="6"
+              value="2"
+              onchange="ngrams()"
+              onkeyup="if(this.value > 6) this.value = null;"
+            />
+            <select name="ngrams-type" id="ngrams-type" onchange="ngrams()">
+              <option value="characters">Characters</option>
+              <option value="words">Words</option>
+            </select>
+
+            <textarea
+              id="ngrams-input"
+              oninput="ngrams()"
+              placeholder="Type something..."
+            ></textarea>
+            <table id="ngrams-output">
+              <thead>
+                <tr><th id="ngrams-th">asdf</th><th>count</th></tr>
+              </thead>
+              <tbody id="ngrams-output-body"></tbody>
+            </table>
+          </details>
         </section>
       </section>
     </main>
+    <script src="./js/theme-switcher.js" defer></script>
+    <script src="./js/ngrams.js" defer></script>
   </body>
-
-  <script type="text/javascript" src="./js/theme-switcher.js" defer></script>
-  <script type="text/javascript" src="./js/ngrams.js" defer></script>
 </html>
