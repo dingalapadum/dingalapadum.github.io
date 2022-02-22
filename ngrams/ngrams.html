@@ -15,6 +15,10 @@
     />
     <link rel="stylesheet" href="css/ngrams.css" />
     <title>N-Grams</title>
+    <script>
+      /*to prevent Firefox FOUC, this must be here*/
+      let FF_FOUC_FIX;
+    </script>
   </head>
   <body>
     <!--[if lt IE 7]
@@ -23,59 +27,68 @@
         <a href="#">upgrade your browser</a> to improve your experience.
       </p>
     <![endif]-->
-    <nav id="nav">
     <img
-        src="resources/light.png"
-        onclick="switchLights()"
-        id="themeswitcher"
-        alt="themeswitcher"
-      />
-    </nav>
+      src="resources/light.png"
+      onclick="switchLights()"
+      id="themeswitcher"
+      alt="themeswitcher"
+    />
     <main class="container">
-      <h1>
-        Visualization of markov chain algorithm to generate text
-      </h1>
+      <h1>Visualization of markov chain algorithm to generate text</h1>
       <p>
-        We'll explore a simple model that can be used to generate. We proceed in two phases:
-        <ol>
-            <li>We use some text to train our model</li>
-            <li>We use sample the trained model to output a random text</li>
-        </ol>
-        
+        We'll explore a simple model that can be used to generate. We proceed in
+        two phases:
       </p>
-      <h2>Basic concepts</h2>
-      <h3>What is a N-Gram</h3>
-      <blockquote cite="https://en.wikipedia.org/wiki/N-gram">
-        [...] an n-gram is a contiguous sequence of n items from a given sample
-        of text or speech. The items can be phonemes, syllables, letters, words
-        or base pairs according to the application.
-        <footer>
-          <cite>
-            <a href="https://en.wikipedia.org/wiki/N-gram">https://en.wikipedia.org/wiki/N-gram</a>
-          </cite>
-        </footer>
-      </blockquote>
+      <ol>
+        <li>We use some text to train our model</li>
+        <li>We use sample the trained model to output a random text</li>
+      </ol>
+
+      <section title="Basic concepts">
+        <h2>Basic concepts</h2>
+        <section title="ngrams">
+          <h3>What is a N-Gram</h3>
+          <blockquote cite="https://en.wikipedia.org/wiki/N-gram">
+            [...] an n-gram is a contiguous sequence of n items from a given
+            sample of text or speech. The items can be phonemes, syllables,
+            letters, words or base pairs according to the application.
+            <footer>
+              <cite>
+                <a href="https://en.wikipedia.org/wiki/N-gram"
+                  >https://en.wikipedia.org/wiki/N-gram</a
+                >
+              </cite>
+            </footer>
+          </blockquote>
+          <p>Choose a N and a Gram-type and then type something </p>
+          <input
+            type="number"
+            name="n-select"
+            id="n-select"
+            min="1"
+            max="6"
+            value="2"
+            onchange="ngrams()"
+            onkeyup="if(this.value > 6) this.value = null;"
+          />
+
+          <select name="ngrams-type" id="ngrams-type" onchange="ngrams()">
+            <option value="characters">Characters</option>
+            <option value="words">Words</option>
+          </select>
+
+          <textarea
+            id="ngrams-input"
+            type="text"
+            oninput="ngrams()"
+            placeholder="Type something..."
+          ></textarea>
+          <p id="ngrams-output"></p>
+        </section>
+      </section>
     </main>
-
-    <script>
-      let theme =
-        localStorage.getItem("theme") ||
-        (window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light");
-      switchLights();
-
-      function switchLights() {
-        theme = theme == "light" ? "dark" : "light";
-        document.getElementById("themeswitcher").src =
-          "resources/" + theme + ".png";
-        let themeswitch = theme == "light" ? "off" : "on";
-        document.getElementById("themeswitcher").title = "lights "+themeswitch;
-        document.documentElement.setAttribute("data-theme", theme);
-      }
-    </script>
-    <!--
-    <script src="" async defer></script>
-    -->
   </body>
+
+  <script type="text/javascript" src="./js/theme-switcher.js" defer></script>
+  <script type="text/javascript" src="./js/ngrams.js" defer></script>
 </html>

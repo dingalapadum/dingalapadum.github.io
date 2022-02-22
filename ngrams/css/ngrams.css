@@ -2,9 +2,20 @@
     padding: 0.5em 1em;
 }
 
+#n-select {
+    width: 4em;
+    height: 3em;
+}
+
+#ngrams-type {
+    width: 13em;
+    height: 3em;
+}
+
 #themeswitcher {
   height: 1.5em;
   width: auto;
-  align-self: flex-end;
-  margin-left: auto;
+  position: fixed;
+  right: 2em;
+  top: 2em;
 }
