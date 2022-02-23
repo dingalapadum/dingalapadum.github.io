@@ -1,5 +1,5 @@
 window.globalNgrams = {};
-window.globalNgrams.sortBy = "countAsc";
+window.globalNgrams.sortBy = "countDesc";
 
 /**
  * Read the inputs from the ngram-example
@@ -63,7 +63,7 @@ function ngramsWords() {
 function printNgramsToTable(n, ngrams) {
     document.getElementById("ngrams-grams-text").textContent = n + "-grams";
     window.globalNgrams.ngramMap = ngrams;
-    populateTableByCount();
+    populateTable(window.globalNgrams.sortBy);
 }
 
 function populateTableByNGram() {
