@@ -1,3 +1,6 @@
+window.globalNgrams = {};
+window.globalNgrams.sortBy = "countAsc";
+
 /**
  * Read the inputs from the ngram-example
  * gram: is either characters
@@ -23,11 +26,11 @@ function ngrams() {
     } else {
         throw "gram should be either 'characters' or 'words' - other values are not ok";
     }
-    globalNgrams = ngrams
-    printNgramsToTable(n, globalNgrams);
+    globalNgrams.ngramMap = ngrams;
+    printNgramsToTable(n, globalNgrams.ngramMap);
 }
 
-/**
+/** 
  * @param n number of characters per 'gram'
  * @param text to extract the n-grams from
  * @returns Map of (ngram: count)
@@ -54,17 +57,65 @@ function ngramsWords() {
 }
 
 /**
- * @param n is the n of n-grams
+ * @param n is the n of n-gramss
  * @param {Map<String, Number>} ngrams
  */
-function printNgramsToTable(n, ngrams, sortBy = "ngram") {
-    document.getElementById("ngrams-th").textContent = n + "-grams";
+function printNgramsToTable(n, ngrams) {
+    document.getElementById("ngrams-grams-text").textContent = n + "-grams";
+    window.globalNgrams.ngramMap = ngrams;
+    populateTableByCount();
+}
 
-    const ngramsArray = Array.from(ngrams).map(([ngram, count]) => ({ ngram, count }));
-    if (sortBy == "ngram") {
+function populateTableByNGram() {
+    let sortBy = window.globalNgrams.sortBy;
+    if (sortBy.startsWith("count")) {
+        document.getElementById("count-dir").innerText = "";
+        document.getElementById("ngram-dir").innerText = "↑";
+        window.globalNgrams.sortBy = "ngramsDesc";
+    } else if (sortBy == "ngramsAsc") {
+        document.getElementById("ngram-dir").innerText = "↑";
+        window.globalNgrams.sortBy = "ngramsDesc";
+    } else {
+        document.getElementById("ngram-dir").innerText = "↓";
+        window.globalNgrams.sortBy = "ngramsAsc";
+    }
+    populateTable(window.globalNgrams.sortBy);
+}
+
+function populateTableByCount() {
+    let sortBy = window.globalNgrams.sortBy;
+    if (sortBy.startsWith("ngrams")) {
+        document.getElementById("ngram-dir").innerText = "";
+        document.getElementById("count-dir").innerText = "↑";
+        window.globalNgrams.sortBy = "countDesc";
+    } else if (sortBy == "countAsc") {
+        document.getElementById("count-dir").innerText = "↑";
+        window.globalNgrams.sortBy = "countDesc";
+    } else {
+        document.getElementById("count-dir").innerText = "↓";
+        window.globalNgrams.sortBy = "countAsc";
+    }
+    populateTable(window.globalNgrams.sortBy);
+}
+
+function replaceCharAtStr(str, index, insert) {
+    if(index > str.length-1) return str;
+    return str.substring(0,index) + insert + str.substring(index+1);
+}
+
+
+
+function populateTable(sortBy) {
+    window.globalNgrams.sortBy = sortBy;
+    const ngramsArray = [...window.globalNgrams.ngramMap].map(([ngram, count]) => ({ ngram, count }));
+    if ("ngramsAsc" == sortBy) {
         ngramsArray.sort((a, b) => a.ngram.localeCompare(b.ngram));
-    } else if (sortBy == "count") {
+    } else if ("ngramsDesc" == sortBy) {
+        ngramsArray.sort((a, b) => b.ngram.localeCompare(a.ngram));
+    } else if ("countAsc" == sortBy) {
         ngramsArray.sort((a, b) => a.count - b.count);
+    } else if ("countDesc" == sortBy) {
+        ngramsArray.sort((a, b) => b.count - a.count);
     }
 
     let outputTablebody = document.getElementById("ngrams-output-body");
@@ -74,7 +125,8 @@ function printNgramsToTable(n, ngrams, sortBy = "ngram") {
         row.insertCell(0).innerHTML = e.ngram;
         row.insertCell(1).innerHTML = e.count;
     })
-}
+};
+
 
 /**
  * INIT-RUN

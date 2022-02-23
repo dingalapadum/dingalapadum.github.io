@@ -65,7 +65,7 @@
           <!-- Try it yourself! -->
           <details id="ngrmas" open>
             <summary>Try it yourself!</summary>
-            <p>Choose a N and a Gram-type and then type something</p>
+            <p>Choose a N and a Gram-type and type some text</p>
             <input
               type="number"
               name="n-select"
@@ -90,8 +90,8 @@
               <table id="ngrams-output">
                 <thead>
                   <tr>
-                    <th id="ngrams-th"></th>
-                    <th>count</th>
+                    <th id="ngrams-grams" class="ngram-table-headers" onclick="populateTableByNGram()"><span id="ngrams-grams-text"></span><span id="ngram-dir" class="dir"></span></th>
+                    <th id="ngrams-count" class="ngram-table-headers" onclick="populateTableByCount()"><span>count</span><span id="count-dir" class="dir"></span></th>
                   </tr>
                 </thead>
                 <tbody id="ngrams-output-body"></tbody>
