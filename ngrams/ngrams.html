@@ -86,12 +86,17 @@
               oninput="ngrams()"
               placeholder="Type something..."
             ></textarea>
-            <table id="ngrams-output">
-              <thead>
-                <tr><th id="ngrams-th">asdf</th><th>count</th></tr>
-              </thead>
-              <tbody id="ngrams-output-body"></tbody>
-            </table>
+            <div id="scrollable-container">
+              <table id="ngrams-output">
+                <thead>
+                  <tr>
+                    <th id="ngrams-th"></th>
+                    <th>count</th>
+                  </tr>
+                </thead>
+                <tbody id="ngrams-output-body"></tbody>
+              </table>
+            </div>
           </details>
         </section>
       </section>
