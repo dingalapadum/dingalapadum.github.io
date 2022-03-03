@@ -3,7 +3,9 @@ window.globalNgrams.sortBy = "countDesc";
 
 /**
  * Read the inputs from the ngram-example
- * gram: is either characters
+ * gram: is the 'type'. i.e.: either characters or words
+ * n: is the number of elements
+ * text: is the text to analyze
  */
 function readNgramInputs() {
     return {
@@ -14,7 +16,7 @@ function readNgramInputs() {
 }
 
 /**
- * create ngrams for the text in  the input-field and output them in a table
+ * create ngrams for the text in the input-field and output them in a table
  */
 function ngrams() {
     const { gram, n, text } = readNgramInputs();
@@ -48,6 +50,7 @@ function ngramsCharacters(n, text) {
 }
 
 /**
+ * TODO
  * @param n number of words per 'gram'
  * @param text to extract the n-grams from
  * @returns Map of (ngram: count)
@@ -61,18 +64,24 @@ function ngramsWords() {
  * @param {Map<String, Number>} ngrams
  */
 function printNgramsToTable(n, ngrams) {
+    // fill in the header
     document.getElementById("ngrams-grams-text").textContent = n + "-grams";
     window.globalNgrams.ngramMap = ngrams;
     populateTable(window.globalNgrams.sortBy);
 }
 
-function populateTableByNGram() {
+/**
+ * triggered when the n-grams-header gets clicked
+ * we have to check in which direction in which we have to sort
+ */
+function populateTableSortedByNGram() {
     let sortBy = window.globalNgrams.sortBy;
-    if (sortBy.startsWith("count")) {
+    /* if before we had sorted by count (in any order) or by ngrams in asc order
+    * then we sort now by ngrams in desc order. Otherwise (i.e. we had sorted by
+    * ngrams in desc order) we now sort in asc order
+    */
+    if (sortBy.startsWith("count") || sortBy == "ngramsAsc") {
         document.getElementById("count-dir").innerText = "";
-        document.getElementById("ngram-dir").innerText = "↑";
-        window.globalNgrams.sortBy = "ngramsDesc";
-    } else if (sortBy == "ngramsAsc") {
         document.getElementById("ngram-dir").innerText = "↑";
         window.globalNgrams.sortBy = "ngramsDesc";
     } else {
@@ -82,13 +91,18 @@ function populateTableByNGram() {
     populateTable(window.globalNgrams.sortBy);
 }
 
-function populateTableByCount() {
+/**
+ * triggered when the count-header gets clicked
+ * we have to check in which direction in which we have to sort
+ */
+function populateTableSortedByCount() {
     let sortBy = window.globalNgrams.sortBy;
-    if (sortBy.startsWith("ngrams")) {
+    /* if before we had sorted by ngrams (in any order) or by count in asc order
+    * then we sort now by count in desc order. Otherwise (i.e. we had sorted by
+    * count in desc order) we now sort in asc order
+    */
+    if (sortBy.startsWith("ngrams") || sortBy == "countAsc") {
         document.getElementById("ngram-dir").innerText = "";
-        document.getElementById("count-dir").innerText = "↑";
-        window.globalNgrams.sortBy = "countDesc";
-    } else if (sortBy == "countAsc") {
         document.getElementById("count-dir").innerText = "↑";
         window.globalNgrams.sortBy = "countDesc";
     } else {
@@ -97,13 +111,6 @@ function populateTableByCount() {
     }
     populateTable(window.globalNgrams.sortBy);
 }
-
-function replaceCharAtStr(str, index, insert) {
-    if(index > str.length-1) return str;
-    return str.substring(0,index) + insert + str.substring(index+1);
-}
-
-
 
 function populateTable(sortBy) {
     window.globalNgrams.sortBy = sortBy;
