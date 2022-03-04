@@ -81,30 +81,44 @@
               <option value="words">Words</option>
             </select>
 
-            <textarea
-              id="ngrams-input"
-              oninput="ngrams()"
-              placeholder="Type something..."
-            ></textarea>
+            <div class="two-columns">
+              <!-- Column 1: input area-->
+              <textarea
+                id="ngrams-input"
+                oninput="ngrams()"
+                placeholder="Type something..."
+              ></textarea>
 
-            <table id="ngrams-head">
-              <thead>
-                <tr>
-                  <th id="ngrams-grams" class="ngram-table-headers" onclick="populateTableSortedByNGram()">
-                    <span id="ngrams-grams-text"></span>
-                    <span id="ngram-dir" class="dir"></span>
-                  </th>
-                  <th id="ngrams-count" class="ngram-table-headers" onclick="populateTableSortedByCount()">
-                    <span>count</span>
-                    <span id="count-dir" class="dir">↑</span>
-                  </th>
-                </tr>
-              </thead>
-            </table>
-            <div id="scrollable-container" class="shadow">
-              <table id="ngrams-output">
-                <tbody id="ngrams-output-body"></tbody>
-              </table>
+              <!-- Column 2: output area-->
+              <div id="ngrams-output">
+                <table id="ngrams-output__head">
+                  <thead>
+                    <tr>
+                      <th
+                        id="ngrams-grams"
+                        class="ngram-table-headers"
+                        onclick="populateTableSortedByNGram()"
+                      >
+                        <span id="ngrams-grams-text"></span>
+                        <span id="ngram-dir" class="dir"></span>
+                      </th>
+                      <th
+                        id="ngrams-count"
+                        class="ngram-table-headers"
+                        onclick="populateTableSortedByCount()"
+                      >
+                        <span>count</span>
+                        <span id="count-dir" class="dir">↑</span>
+                      </th>
+                    </tr>
+                  </thead>
+                </table>
+                <div id="scrollable-container" class="shadow">
+                  <table id="ngrams-output__bodytable">
+                    <tbody id="ngrams-output__bodytable__body"></tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </details>
         </section>

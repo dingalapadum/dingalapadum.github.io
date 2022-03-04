@@ -125,7 +125,7 @@ function populateTable(sortBy) {
         ngramsArray.sort((a, b) => b.count - a.count);
     }
 
-    let outputTablebody = document.getElementById("ngrams-output-body");
+    let outputTablebody = document.getElementById("ngrams-output__bodytable__body");
     while (outputTablebody.firstChild) { outputTablebody.removeChild(outputTablebody.firstChild) };
     ngramsArray.forEach(e => {
         let row = outputTablebody.insertRow();

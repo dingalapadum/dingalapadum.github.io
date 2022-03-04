@@ -16,18 +16,40 @@
   top: 2em;
 }
 
+.two-columns {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#ngrams-input {
+  width: 50%;
+  resize: vertical;
+  min-width: 18em;
+  margin: 0.5em;
+  flex-grow: 2;
+}
+
+#ngrams-output {
+  width: 15em;
+  margin: 0.5em;
+  min-width: 20%;
+  flex-grow: 1;
+}
+
+th {
+  position: sticky; top: 0;
+  width: 50%;
+  background-color: var(--secondary);
+  border-radius: 5px;
+}
+
 #scrollable-container {
     resize: vertical;
     overflow: auto;
     height: 200px;
 }
 
-th {
-    position: sticky; top: 0;
-    width: 50%;
-    background-color: var(--secondary);
-    border-radius: 5px;
-}
+
 
 .dir {
     float: right;
