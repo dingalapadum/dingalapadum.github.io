@@ -16,6 +16,7 @@ function ngrams() {
     }
     globalNgrams.ngramMap = ngrams;
     printNgramsToTable(n, globalNgrams.ngramMap);
+    printProbabilityTable(n, globalNgrams.ngramMap);
 }
 
 /**
@@ -59,7 +60,12 @@ function ngramsWords() {
     alert("hell");
 }
 
+
 /**
+ * Print ngrams into the two-column-table:
+ * _________________
+ * | ngram | count |
+ * -----------------
  * @param n is the n of n-gramss
  * @param {Map<String, Number>} ngrams
  */
@@ -126,14 +132,46 @@ function populateTable(sortBy) {
     }
 
     let outputTablebody = document.getElementById("ngrams-output__bodytable__body");
-    while (outputTablebody.firstChild) { outputTablebody.removeChild(outputTablebody.firstChild) };
+
+    removeAllChildrenFromElement(outputTablebody);
+
     ngramsArray.forEach(e => {
         let row = outputTablebody.insertRow();
-        row.insertCell(0).innerHTML = e.ngram;
+        row.insertCell(0).innerHTML = "'" + e.ngram + "'";
         row.insertCell(1).innerHTML = e.count;
     })
 };
 
+function removeAllChildrenFromElement(element){
+    while (element.firstChild) { element.removeChild(element.firstChild) };
+}
+
+/**
+ * Print ngrams into a list of list
+ * 1. list is of (n-1)-grams
+ * 2. list the '-1'-letter of the ngram with the number of occurrences
+ * @param n is the n of n-gramss
+ * @param {Map<String, Number>} ngrams
+ */
+function printProbabilityTable(n, ngrams){
+    const ngramsArray = [...window.globalNgrams.ngramMap].map(([ngram, count]) => ({ ngram, count }));
+    ngramsArray.sort((a, b) => a.ngram.localeCompare(b.ngram));
+
+    let nMinusOneGramMap = new Map();
+    for (const ngram of ngramsArray) {
+        nMinusOnegram = ngram.ngram.slice(0, n-1);
+        var suffixList = nMinusOneGramMap.get(nMinusOnegram);
+        if (suffixList == null) {
+            suffixList = [];
+        }
+        let suffix = ngram.ngram.slice(n-1, n);
+        let count = ngram.count;
+        suffixList.push({ suffix, count });
+        nMinusOneGramMap.set(nMinusOnegram, suffixList);
+    }
+    window.globalNgrams.ngramsTable = nMinusOneGramMap;
+    console.log(nMinusOneGramMap);
+}
 
 /**
  * INIT-RUN
