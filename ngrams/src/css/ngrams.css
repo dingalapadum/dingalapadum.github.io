@@ -26,6 +26,7 @@
   resize: vertical;
   min-width: 18em;
   margin: 0.5em;
+  margin-left: 0  ;
   flex-grow: 2;
 }
 
@@ -49,7 +50,9 @@ th {
     height: 200px;
 }
 
-
+#ngrams-output__head {
+  margin: 0;
+}
 
 .dir {
     float: right;
