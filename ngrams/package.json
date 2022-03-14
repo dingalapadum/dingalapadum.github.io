@@ -2,7 +2,6 @@
   "name": "ngrams",
   "version": "1.0.0",
   "description": "a small webapp to demonstrate ngrams and markov-chains as text generators",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
