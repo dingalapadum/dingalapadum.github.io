@@ -2,20 +2,6 @@ window.globalNgrams = {};
 window.globalNgrams.sortBy = "countDesc";
 
 /**
- * Read the inputs from the ngram-example
- * gram: is the 'type'. i.e.: either characters or words
- * n: is the number of elements
- * text: is the text to analyze
- */
-function readNgramInputs() {
-    return {
-        gram: document.getElementById("ngrams-type").value,
-        n: +document.getElementById("n-select").value,
-        text: document.getElementById("ngrams-input").value
-    }
-}
-
-/**
  * create ngrams for the text in the input-field and output them in a table
  */
 function ngrams() {
@@ -30,6 +16,20 @@ function ngrams() {
     }
     globalNgrams.ngramMap = ngrams;
     printNgramsToTable(n, globalNgrams.ngramMap);
+}
+
+/**
+ * Read the inputs from the ngram-example
+ * gram: is the 'type'. i.e.: either characters or words
+ * n: is the number of elements
+ * text: is the text to analyze
+ */
+ function readNgramInputs() {
+    return {
+        gram: document.getElementById("ngrams-type").value,
+        n: +document.getElementById("n-select").value,
+        text: document.getElementById("ngrams-input").value
+    }
 }
 
 /** 
@@ -138,4 +138,4 @@ function populateTable(sortBy) {
 /**
  * INIT-RUN
  */
-ngrams()
+ ngrams();
