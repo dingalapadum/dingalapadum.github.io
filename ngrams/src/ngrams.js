@@ -77,53 +77,41 @@ function printNgramsToTable(n, ngrams) {
 }
 
 /**
- * triggered when the n-grams-header gets clicked
- * we have to check in which direction in which we have to sort
+ * triggered when either the ngram- or count-header gets clicked
  */
-function populateTableSortedByNGram() {
-    let sortBy = window.globalNgrams.sortBy;
-    /* if before we had sorted by count (in any order) or by ngrams in asc order
-    * then we sort now by ngrams in desc order. Otherwise (i.e. we had sorted by
-    * ngrams in desc order) we now sort in asc order
-    */
-    if (sortBy.startsWith("count") || sortBy == "ngramsAsc") {
-        document.getElementById("count-dir").innerText = "";
-        document.getElementById("ngram-dir").innerText = "↑";
-        window.globalNgrams.sortBy = "ngramsDesc";
-    } else {
-        document.getElementById("ngram-dir").innerText = "↓";
-        window.globalNgrams.sortBy = "ngramsAsc";
-    }
-    populateTable(window.globalNgrams.sortBy);
+function populateTableSortedBy(prop) {
+    let sortBy = switchSortByTo(prop);
+    populateTable(sortBy);
 }
 
 /**
- * triggered when the count-header gets clicked
- * we have to check in which direction in which we have to sort
+ * Switch or set the global 'sortBy' variable
+ * sortBy is either: ngramAsc, ngramDesc, countAsc or countDesc
+ * 
+ * @param String prop is either 'ngrams' or 'count'
+ * - if the prop is the same as it was before, then we switch the suffix of sortBy (Asc to Desc or viseversa)
+ * - if the prop is not the same as it was, then we set it to the new prop-value with the Asc suffix
  */
-function populateTableSortedByCount() {
-    let sortBy = window.globalNgrams.sortBy;
-    /* if before we had sorted by ngrams (in any order) or by count in asc order
-    * then we sort now by count in desc order. Otherwise (i.e. we had sorted by
-    * count in desc order) we now sort in asc order
-    */
-    if (sortBy.startsWith("ngrams") || sortBy == "countAsc") {
-        document.getElementById("ngram-dir").innerText = "";
-        document.getElementById("count-dir").innerText = "↑";
-        window.globalNgrams.sortBy = "countDesc";
+function switchSortByTo(prop) {
+    let other = prop == "ngram" ? "count" : "ngram";
+    let currentSortBy = window.globalNgrams.sortBy;
+    document.getElementById(other + "-dir").innerText = "";
+    if (currentSortBy == prop+"Desc") {
+        document.getElementById(prop+"-dir").innerText = "↓";
+        window.globalNgrams.sortBy = prop+"Asc";
     } else {
-        document.getElementById("count-dir").innerText = "↓";
-        window.globalNgrams.sortBy = "countAsc";
+        document.getElementById(prop + "-dir").innerText = "↑";
+        window.globalNgrams.sortBy = prop + "Desc";
     }
-    populateTable(window.globalNgrams.sortBy);
+    return window.globalNgrams.sortBy;
 }
 
+
 function populateTable(sortBy) {
-    window.globalNgrams.sortBy = sortBy;
     const ngramsArray = [...window.globalNgrams.ngramMap].map(([ngram, count]) => ({ ngram, count }));
-    if ("ngramsAsc" == sortBy) {
+    if ("ngramAsc" == sortBy) {
         ngramsArray.sort((a, b) => a.ngram.localeCompare(b.ngram));
-    } else if ("ngramsDesc" == sortBy) {
+    } else if ("ngramDesc" == sortBy) {
         ngramsArray.sort((a, b) => b.ngram.localeCompare(a.ngram));
     } else if ("countAsc" == sortBy) {
         ngramsArray.sort((a, b) => a.count - b.count);
@@ -170,7 +158,7 @@ function printProbabilityTable(n, ngrams){
         nMinusOneGramMap.set(nMinusOnegram, suffixList);
     }
     window.globalNgrams.ngramsTable = nMinusOneGramMap;
-    console.log(nMinusOneGramMap);
+
 }
 
 /**
