@@ -34,18 +34,18 @@
       alt="themeswitcher"
     />
     <main class="container">
-      <h1>Visualization of markov chain algorithm to generate text</h1>
+      <h1>Using a markov-chain of ngrams to generate text</h1>
       <p>
         We'll explore a simple model that can be used to generate. We proceed in
         two phases:
       </p>
       <ol>
-        <li>We use some text to train our model</li>
-        <li>We use sample the trained model to output a random text</li>
+        <li><a href="#training">We use some text to train our model</a></li>
+        <li>We sample the trained model to output a random text</li>
       </ol>
 
       <section title="Basic concepts">
-        <h2>Basic concepts</h2>
+        <h2 id="training">Training the model</h2>
         <!-- NGRAMS -->
         <section title="ngrams">
           <h3>What is a N-Gram</h3>
@@ -63,8 +63,7 @@
           </blockquote>
 
           <!-- Try it yourself! -->
-          <details id="ngrmas" open>
-            <summary>Try it yourself!</summary>
+            <h4>Try it yourself!</h4>
             <p>Choose a N and a Gram-type and type some text</p>
             <input
               type="number"
@@ -122,9 +121,12 @@
             </div>
             <!-- END: two-columns -->
 
+            <p>In the table we can see how many times each n-gram appears in the text
+            </p>
+
             <!-- Start probability-Table -->
             <ul id="probability-table"></ul>
-          </details>
+
         </section>
       </section>
     </main>
