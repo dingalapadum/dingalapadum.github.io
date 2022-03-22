@@ -63,73 +63,87 @@
           </blockquote>
 
           <!-- Try it yourself! -->
-            <h4>Try it yourself!</h4>
-            <p>Choose a N and a Gram-type and type some text</p>
-            <input
-              type="number"
-              name="n-select"
-              id="n-select"
-              min="1"
-              max="6"
-              value="2"
-              onchange="ngrams()"
-              onkeyup="if(this.value > 6) this.value = null;"
-            />
-            <select name="ngrams-type" id="ngrams-type" onchange="ngrams()">
-              <option value="character">Characters</option>
-              <option value="word">Words</option>
-            </select>
+          <h4>Try it yourself!</h4>
+          <p>Choose a N and a Gram-type and type some text</p>
+          <input
+            type="number"
+            name="n-select"
+            id="n-select"
+            min="1"
+            max="6"
+            value="2"
+            onchange="ngrams()"
+            onkeyup="if(this.value > 6) this.value = null;"
+          />
+          <select name="ngrams-type" id="ngrams-type" onchange="ngrams()">
+            <option value="character">Characters</option>
+            <option value="word">Words</option>
+          </select>
 
-            <div class="two-columns">
-              <!-- Column 1: input area-->
-              <textarea
-                id="ngrams-input"
-                oninput="ngrams()"
-                placeholder="Type something..."
-              ></textarea>
+          <p>
+            In the table on the right hand side shows how many times each
+            <span class="ngrams-grams-text"></span> appears in the text.
+          </p>
+          <div class="two-columns">
+            <!-- Column 1: input area-->
+            <textarea
+              id="ngrams-input"
+              oninput="ngrams()"
+              placeholder="Type something..."
+            ></textarea>
 
-              <!-- Column 2: output area-->
-              <div id="ngrams-output">
-                <table id="ngrams-output__head">
-                  <thead>
-                    <tr>
-                      <th
-                        id="ngrams-grams"
-                        class="ngram-table-headers"
-                        onclick="populateTableSortedBy('ngram')"
-                      >
-                        <span class="ngrams-grams-text"></span>
-                        <span id="ngram-dir" class="dir"></span>
-                      </th>
-                      <th
-                        id="ngrams-count"
-                        class="ngram-table-headers"
-                        onclick="populateTableSortedBy('count')"
-                      >
-                        <span>count</span>
-                        <span id="count-dir" class="dir">↑</span>
-                      </th>
-                    </tr>
-                  </thead>
+            <!-- Column 2: output area-->
+            <div id="ngrams-output">
+              <table id="ngrams-output__head">
+                <thead>
+                  <tr>
+                    <th
+                      id="ngrams-grams"
+                      class="ngram-table-headers"
+                      onclick="populateTableSortedBy('ngram')"
+                    >
+                      <span class="ngrams-grams-text"></span>
+                      <span id="ngram-dir" class="dir"></span>
+                    </th>
+                    <th
+                      id="ngrams-count"
+                      class="ngram-table-headers"
+                      onclick="populateTableSortedBy('count')"
+                    >
+                      <span>count</span>
+                      <span id="count-dir" class="dir">↑</span>
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+              <div id="scrollable-container" class="shadow">
+                <table id="ngrams-output__bodytable">
+                  <tbody id="ngrams-output__bodytable__body"></tbody>
                 </table>
-                <div id="scrollable-container" class="shadow">
-                  <table id="ngrams-output__bodytable">
-                    <tbody id="ngrams-output__bodytable__body"></tbody>
-                  </table>
-                </div>
               </div>
             </div>
-            <!-- END: two-columns -->
+          </div>
+          <!-- END: two-columns -->
 
-            <p>
-              In the table we can see how many times each <span class="ngrams-grams-text"></span> appears in the text.
-              For each <span class="ngrams-grams-text"></span> we now drop the last 'gram' (i.e. a single <span class="ngrams-type"></span>) a consider the
-              <span class="ngrams-grams-text-minus-one"></span> and count how often 
-            </p>
+          <p>
+            We can regard a <span class="ngrams-grams-text"></span> as a
+            transition from a
+            <span class="ngrams-grams-text-minus-one"></span> to another
+            <span class="ngrams-grams-text-minus-one"></span>. I.e. counting
+            <span class="ngrams-grams-text"></span> is the same as counting specific transitions
+            between <span class="ngrams-grams-text-minus-one"></span>s.
+          </p>
+          <p>
+            Example: <br>
+            The 4-gram '<span class="four-gram-example"></span>' can be seen as a transition from
+            the 3-gram '<span class="three-gram-example-one"></span>' to the 3-gram '<span class="three-gram-example-two"></span>'.
+            <br>
+            I.e.:<br>
+            '<span class="four-gram-example"></span>' = '<span class="three-gram-example-one"></span>' ➛ '<span class="three-gram-example-two"></span>'
 
-            <!-- Start probability-Table -->
-            <ul id="probability-table"></ul>
-
+          </p>
+          <!-- Start probability-Table -->
+          <ul id="probability-table"></ul>
         </section>
       </section>
     </main>

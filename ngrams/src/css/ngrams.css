@@ -44,6 +44,10 @@ th {
   border-radius: 5px;
 }
 
+td {
+  width: 50%;
+}
+
 #scrollable-container {
     resize: vertical;
     overflow: auto;

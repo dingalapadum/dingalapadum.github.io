@@ -4,6 +4,7 @@ window.globalNgrams.type = "character";
 window.globalNgrams.text = "";
 window.globalNgrams.n = 2;
 window.globalNgrams.ngramMap = {};
+window.globalNgrams.ngramsTable = {};
 
 /**
  * create ngrams for the text in the input-field and output them in a table
@@ -52,6 +53,9 @@ function updateTextOccurrences() {
     [...document.getElementsByClassName("ngrams-grams-text")].forEach(element => element.textContent = n + "-gram");
     [...document.getElementsByClassName("ngrams-grams-text-minus-one")].forEach(element => element.textContent = (n-1) + "-gram");
     [...document.getElementsByClassName("ngrams-type")].forEach(element => element.textContent = window.globalNgrams.type);
+    [...document.getElementsByClassName("four-gram-example")].forEach(element => element.textContent = window.globalNgrams.type == "character" ? "boat" : "That car is nice");
+    [...document.getElementsByClassName("three-gram-example-one")].forEach(element => element.textContent = window.globalNgrams.type == "character" ? "boa" : "That car is");
+    [...document.getElementsByClassName("three-gram-example-two")].forEach(element => element.textContent = window.globalNgrams.type == "character" ? "oat" : "car is nice");
 }
 
 /**
@@ -171,6 +175,8 @@ function printProbabilityTable(){
     }
     window.globalNgrams.ngramsTable = nMinusOneGramMap;
 }
+
+
 
 /**
  * INIT-RUN
