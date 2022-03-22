@@ -76,8 +76,8 @@
               onkeyup="if(this.value > 6) this.value = null;"
             />
             <select name="ngrams-type" id="ngrams-type" onchange="ngrams()">
-              <option value="characters">Characters</option>
-              <option value="words">Words</option>
+              <option value="character">Characters</option>
+              <option value="word">Words</option>
             </select>
 
             <div class="two-columns">
@@ -98,7 +98,7 @@
                         class="ngram-table-headers"
                         onclick="populateTableSortedBy('ngram')"
                       >
-                        <span id="ngrams-grams-text"></span>
+                        <span class="ngrams-grams-text"></span>
                         <span id="ngram-dir" class="dir"></span>
                       </th>
                       <th
@@ -121,7 +121,10 @@
             </div>
             <!-- END: two-columns -->
 
-            <p>In the table we can see how many times each n-gram appears in the text
+            <p>
+              In the table we can see how many times each <span class="ngrams-grams-text"></span> appears in the text.
+              For each <span class="ngrams-grams-text"></span> we now drop the last 'gram' (i.e. a single <span class="ngrams-type"></span>) a consider the
+              <span class="ngrams-grams-text-minus-one"></span> and count how often 
             </p>
 
             <!-- Start probability-Table -->

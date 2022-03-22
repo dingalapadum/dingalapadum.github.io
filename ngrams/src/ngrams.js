@@ -1,44 +1,66 @@
 window.globalNgrams = {};
 window.globalNgrams.sortBy = "countDesc";
+window.globalNgrams.type = "character";
+window.globalNgrams.text = "";
+window.globalNgrams.n = 2;
+window.globalNgrams.ngramMap = {};
 
 /**
  * create ngrams for the text in the input-field and output them in a table
  */
 function ngrams() {
-    const { gram, n, text } = readNgramInputs();
-    let ngrams = null;
-    if (gram == "characters") {
-        ngrams = ngramsCharacters(n, text);
-    } else if (gram == "words") {
-        ngrams = ngramsWords(n, text);
-    } else {
-        throw "gram should be either 'characters' or 'words' - other values are not ok";
-    }
-    globalNgrams.ngramMap = ngrams;
-    printNgramsToTable(n, globalNgrams.ngramMap);
-    printProbabilityTable(n, globalNgrams.ngramMap);
+    setGlobalInputs();
+    computeNgramMap();
+    updateTextOccurrences();
+    populateTable();
+    printProbabilityTable();
 }
 
 /**
- * Read the inputs from the ngram-example
- * gram: is the 'type'. i.e.: either characters or words
+ * Read the user-inputs from the page and set the global variables
+ * type: is either characters or words
  * n: is the number of elements
  * text: is the text to analyze
  */
- function readNgramInputs() {
-    return {
-        gram: document.getElementById("ngrams-type").value,
-        n: +document.getElementById("n-select").value,
-        text: document.getElementById("ngrams-input").value
+ function setGlobalInputs() {
+    window.globalNgrams.type = document.getElementById("ngrams-type").value;
+    window.globalNgrams.n = +document.getElementById("n-select").value;
+    window.globalNgrams.text = document.getElementById("ngrams-input").value;
+}
+
+/**
+ * Computes and sets the global ngramMap by delegating
+ * to either the character or word ngramMap computation
+ */
+function computeNgramMap() {
+    if (window.globalNgrams.type == "character") {
+        window.globalNgrams.ngramMap = computeNgramMapCharacters();
+    } else if (window.globalNgrams.type == "word") {
+        window.globalNgrams.ngramMap = computeNgramMapWords();
+    } else {
+        throw "gram should be either 'character' or 'word' - other values are not ok";
     }
 }
 
-/** 
- * @param n number of characters per 'gram'
- * @param text to extract the n-grams from
+/**
+ * Update all occurrences of 'n-gram' and gram-type in the text
+ * - the n in n-gram should be replaced with the correct number
+ * - the type should either be 'character' or 'word'
+ */
+function updateTextOccurrences() {
+    let n = window.globalNgrams.n;
+    [...document.getElementsByClassName("ngrams-grams-text")].forEach(element => element.textContent = n + "-gram");
+    [...document.getElementsByClassName("ngrams-grams-text-minus-one")].forEach(element => element.textContent = (n-1) + "-gram");
+    [...document.getElementsByClassName("ngrams-type")].forEach(element => element.textContent = window.globalNgrams.type);
+}
+
+/**
  * @returns Map of (ngram: count)
  */
-function ngramsCharacters(n, text) {
+function computeNgramMapCharacters() {
+    let n = window.globalNgrams.n;
+    let text = window.globalNgrams.text;
+
     let ngrams = new Map();
     if (n <= text.length) {
         for (let i = 0; i < (text.length - n + 1); i++) {
@@ -52,43 +74,27 @@ function ngramsCharacters(n, text) {
 
 /**
  * TODO
- * @param n number of words per 'gram'
- * @param text to extract the n-grams from
  * @returns Map of (ngram: count)
  */
-function ngramsWords() {
+function computeNgramMapWords() {
     alert("hell");
 }
 
-
 /**
- * Print ngrams into the two-column-table:
- * _________________
- * | ngram | count |
- * -----------------
- * @param n is the n of n-gramss
- * @param {Map<String, Number>} ngrams
- */
-function printNgramsToTable(n, ngrams) {
-    // fill in the header
-    document.getElementById("ngrams-grams-text").textContent = n + "-grams";
-    window.globalNgrams.ngramMap = ngrams;
-    populateTable(window.globalNgrams.sortBy);
-}
-
-/**
- * triggered when either the ngram- or count-header gets clicked
+ * Triggered when a table-header is clicked.
+ * The param depends on which table-header is clicked
+ * @param {String} prop prop is either 'ngram' or 'count'
  */
 function populateTableSortedBy(prop) {
-    let sortBy = switchSortByTo(prop);
-    populateTable(sortBy);
+    switchSortByTo(prop);
+    populateTable();
 }
 
 /**
  * Switch or set the global 'sortBy' variable
  * sortBy is either: ngramAsc, ngramDesc, countAsc or countDesc
  * 
- * @param String prop is either 'ngrams' or 'count'
+ * @param {String} prop prop is either 'ngrams' or 'count'
  * - if the prop is the same as it was before, then we switch the suffix of sortBy (Asc to Desc or viseversa)
  * - if the prop is not the same as it was, then we set it to the new prop-value with the Asc suffix
  */
@@ -103,11 +109,18 @@ function switchSortByTo(prop) {
         document.getElementById(prop + "-dir").innerText = "↑";
         window.globalNgrams.sortBy = prop + "Desc";
     }
-    return window.globalNgrams.sortBy;
 }
 
-
-function populateTable(sortBy) {
+/**
+ * Print ngrams into the two-column-table:
+ * _________________
+ * | ngram | count |
+ * -----------------
+ *
+ * The table is sorted according to the value of window.globalNgrams.sortBy
+ */
+function populateTable() {
+    let sortBy = window.globalNgrams.sortBy;
     const ngramsArray = [...window.globalNgrams.ngramMap].map(([ngram, count]) => ({ ngram, count }));
     if ("ngramAsc" == sortBy) {
         ngramsArray.sort((a, b) => a.ngram.localeCompare(b.ngram));
@@ -138,10 +151,9 @@ function removeAllChildrenFromElement(element){
  * Print ngrams into a list of list
  * 1. list is of (n-1)-grams
  * 2. list the '-1'-letter of the ngram with the number of occurrences
- * @param n is the n of n-gramss
- * @param {Map<String, Number>} ngrams
  */
-function printProbabilityTable(n, ngrams){
+function printProbabilityTable(){
+    let n = window.globalNgrams.n;
     const ngramsArray = [...window.globalNgrams.ngramMap].map(([ngram, count]) => ({ ngram, count }));
     ngramsArray.sort((a, b) => a.ngram.localeCompare(b.ngram));
 
@@ -158,7 +170,6 @@ function printProbabilityTable(n, ngrams){
         nMinusOneGramMap.set(nMinusOnegram, suffixList);
     }
     window.globalNgrams.ngramsTable = nMinusOneGramMap;
-
 }
 
 /**
