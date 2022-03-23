@@ -4,7 +4,7 @@ window.globalNgrams.type = "character";
 window.globalNgrams.text = "";
 window.globalNgrams.n = 2;
 window.globalNgrams.ngramMap = {};
-window.globalNgrams.ngramsTable = {};
+window.globalNgrams.transitionTable = {};
 
 /**
  * create ngrams for the text in the input-field and output them in a table
@@ -13,8 +13,9 @@ function ngrams() {
     setGlobalInputs();
     computeNgramMap();
     updateTextOccurrences();
-    populateTable();
-    printProbabilityTable();
+    populateNgramTable();
+    createNMinusOneGramTable();
+    populateTransitionTable();
 }
 
 /**
@@ -91,7 +92,7 @@ function computeNgramMapWords() {
  */
 function populateTableSortedBy(prop) {
     switchSortByTo(prop);
-    populateTable();
+    populateNgramTable();
 }
 
 /**
@@ -123,7 +124,7 @@ function switchSortByTo(prop) {
  *
  * The table is sorted according to the value of window.globalNgrams.sortBy
  */
-function populateTable() {
+function populateNgramTable() {
     let sortBy = window.globalNgrams.sortBy;
     const ngramsArray = [...window.globalNgrams.ngramMap].map(([ngram, count]) => ({ ngram, count }));
     if ("ngramAsc" == sortBy) {
@@ -156,7 +157,7 @@ function removeAllChildrenFromElement(element){
  * 1. list is of (n-1)-grams
  * 2. list the '-1'-letter of the ngram with the number of occurrences
  */
-function printProbabilityTable(){
+function createNMinusOneGramTable(){
     let n = window.globalNgrams.n;
     const ngramsArray = [...window.globalNgrams.ngramMap].map(([ngram, count]) => ({ ngram, count }));
     ngramsArray.sort((a, b) => a.ngram.localeCompare(b.ngram));
@@ -168,15 +169,31 @@ function printProbabilityTable(){
         if (suffixList == null) {
             suffixList = [];
         }
-        let suffix = ngram.ngram.slice(n-1, n);
+        let suffix = ngram.ngram.slice(1, n);
         let count = ngram.count;
-        suffixList.push({ suffix, count });
+        suffixList.push({ gram: suffix, count: count });
         nMinusOneGramMap.set(nMinusOnegram, suffixList);
     }
-    window.globalNgrams.ngramsTable = nMinusOneGramMap;
+    window.globalNgrams.transitionTable = nMinusOneGramMap;
 }
 
+function populateTransitionTable() {
+    const transitions = window.globalNgrams.transitionTable;
+    let transitionTable = document.getElementById("transition-table");
+    for (let [sourceGram, toGrams] of transitions.entries()) {
+        let currSource = document.createElement("li");
+        currSource.appendChild(document.createTextNode(sourceGram + ":"));
 
+        let toGramsList = document.createElement("ul");
+        for (let toGram of toGrams) {
+            let currTarget = document.createElement("li");
+            currTarget.appendChild(document.createTextNode(toGram.gram + ":" + toGram.count));
+            toGramsList.appendChild(currTarget)
+        }
+        currSource.appendChild(toGramsList);
+        transitionTable.appendChild(currSource);
+    }
+}
 
 /**
  * INIT-RUN

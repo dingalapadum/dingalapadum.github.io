@@ -116,7 +116,7 @@
                   </tr>
                 </thead>
               </table>
-              <div id="scrollable-container" class="shadow">
+              <div id="scrollable-container">
                 <table id="ngrams-output__bodytable">
                   <tbody id="ngrams-output__bodytable__body"></tbody>
                 </table>
@@ -126,24 +126,37 @@
           <!-- END: two-columns -->
 
           <p>
-            We can regard a <span class="ngrams-grams-text"></span> as a
-            transition from a
-            <span class="ngrams-grams-text-minus-one"></span> to another
+            Idea:<br />
+            We regard a <span class="ngrams-grams-text"></span> as a transition
+            from a <span class="ngrams-grams-text-minus-one"></span> to another
             <span class="ngrams-grams-text-minus-one"></span>. I.e. counting
-            <span class="ngrams-grams-text"></span> is the same as counting specific transitions
-            between <span class="ngrams-grams-text-minus-one"></span>s.
+            <span class="ngrams-grams-text"></span> is the same as counting
+            specific transitions between
+            <span class="ngrams-grams-text-minus-one"></span>s.
           </p>
           <p>
-            Example: <br>
-            The 4-gram '<span class="four-gram-example"></span>' can be seen as a transition from
-            the 3-gram '<span class="three-gram-example-one"></span>' to the 3-gram '<span class="three-gram-example-two"></span>'.
-            <br>
-            I.e.:<br>
-            '<span class="four-gram-example"></span>' = '<span class="three-gram-example-one"></span>' ➛ '<span class="three-gram-example-two"></span>'
-
+            Example: <br />
+            The 4-gram '<span class="four-gram-example"></span>' can be seen as
+            a transition from the 3-gram '<span
+              class="three-gram-example-one"
+            ></span
+            >' to the 3-gram '<span class="three-gram-example-two"></span>'.
+            <br />
+            I.e.:<br />
+            '<span class="four-gram-example"></span>' = '<span
+              class="three-gram-example-one"
+            ></span
+            >' ➛ '<span class="three-gram-example-two"></span>'
           </p>
-          <!-- Start probability-Table -->
-          <ul id="probability-table"></ul>
+          <p>
+            So now for each <span class="ngrams-grams-text-minus-one"></span> we
+            proceed to write down all the
+            <span class="ngrams-grams-text-minus-one"></span>s it is followed by
+            together with the corresponding count.
+          </p>
+
+          <!-- Start transition-Table -->
+          <ul id="transition-table"></ul>
         </section>
       </section>
     </main>
