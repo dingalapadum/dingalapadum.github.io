@@ -148,10 +148,6 @@ function populateNgramTable() {
     })
 };
 
-function removeAllChildrenFromElement(element){
-    while (element.firstChild) { element.removeChild(element.firstChild) };
-}
-
 /**
  * Print ngrams into a list of list
  * 1. list is of (n-1)-grams
@@ -180,19 +176,21 @@ function createNMinusOneGramTable(){
 function populateTransitionTable() {
     const transitions = window.globalNgrams.transitionTable;
     let transitionTable = document.getElementById("transition-table");
+    removeAllChildrenFromElement(transitionTable);
     for (let [sourceGram, toGrams] of transitions.entries()) {
-        let currSource = document.createElement("li");
-        currSource.appendChild(document.createTextNode(sourceGram + ":"));
+        let row = transitionTable.insertRow();
+        row.insertCell(0).innerHTML = "'" + sourceGram + "': ";
 
-        let toGramsList = document.createElement("ul");
         for (let toGram of toGrams) {
-            let currTarget = document.createElement("li");
-            currTarget.appendChild(document.createTextNode(toGram.gram + ":" + toGram.count));
-            toGramsList.appendChild(currTarget)
+            row.insertCell(-1).innerHTML = "'" + toGram.gram + "': " + toGram.count;
         }
-        currSource.appendChild(toGramsList);
-        transitionTable.appendChild(currSource);
     }
+}
+
+
+
+function removeAllChildrenFromElement(element){
+    while (element.firstChild) { element.removeChild(element.firstChild) };
 }
 
 /**

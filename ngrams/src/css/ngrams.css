@@ -48,13 +48,20 @@ td {
   width: 50%;
 }
 
-#scrollable-container {
+.scrollable-container {
     resize: vertical;
     overflow: auto;
     height: 200px;
+    border-style: solid;
+    border-radius: 0.5em;
+    border-width: thin;
 }
 
 #ngrams-output__head {
+  margin: 0;
+}
+
+#transitions-output__head {
   margin: 0;
 }
 
