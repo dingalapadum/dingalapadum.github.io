@@ -39,13 +39,28 @@
 
 th {
   position: sticky; top: 0;
-  width: 50%;
   background-color: var(--secondary);
   border-radius: 5px;
 }
 
-td {
+
+.fiftyPercent {
   width: 50%;
+}
+
+tr td {
+  min-width: 8em;
+  border: var(--border-width) solid var(--table-border-color);
+}
+
+tr td:first-child {
+  min-width: 5em;
+  max-width: 5em;
+}
+
+
+.first-column {
+  width: 5em;
 }
 
 .scrollable-container {

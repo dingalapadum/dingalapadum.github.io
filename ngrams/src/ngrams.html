@@ -125,11 +125,11 @@
           </div>
           <!-- END: two-columns -->
 
+          <h3>All right, but what do we do with these  <span class="ngrams-grams-text"></span>?</h3>
           <p>
-            Idea:<br />
             We regard a <span class="ngrams-grams-text"></span> as a transition
             from a <span class="ngrams-grams-text-minus-one"></span> to another
-            <span class="ngrams-grams-text-minus-one"></span>. I.e. counting
+            <span class="ngrams-grams-text-minus-one"></span>. Thus counting
             <span class="ngrams-grams-text"></span> is the same as counting
             specific transitions between
             <span class="ngrams-grams-text-minus-one"></span>s.
@@ -159,18 +159,33 @@
           <table id="transitions-output__head">
             <thead>
               <tr>
-                <th>
-                  Source
-                </th>
-                <th>
-                  Targets
-                </th>
+                <th class="transition-table-headers first-column">Source</th>
+                <th class="transition-table-headers">Targets</th>
               </tr>
             </thead>
           </table>
           <div class="scrollable-container">
-            <table id="transition-table"></ul>
+            <table id="transition-table">
+              <tbody id="transition-table__body">
+
+              </tbody>
+            </table>
           </div>
+
+          <p>
+            Using the counts  we compute the probabilty of the respective transition.
+          </p>
+          <button id="transition-table-button" onclick="switchTransitionTable()">
+            Show probabilites
+          </button>
+
+          <p>
+            Note that transitioning from a source
+            <span class="ngrams-grams-text-minus-one"> </span> to a target
+            <span class="ngrams-grams-text-minus-one"></span> is the same as
+            appending a character to the source
+            <span class="ngrams-grams-text-minus-one"></span>.
+          </p>
         </section>
       </section>
     </main>

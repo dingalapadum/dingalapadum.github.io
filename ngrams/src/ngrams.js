@@ -5,6 +5,7 @@ window.globalNgrams.text = "";
 window.globalNgrams.n = 2;
 window.globalNgrams.ngramMap = {};
 window.globalNgrams.transitionTable = {};
+window.globalNgrams.transitionTableAsProb = false;
 
 /**
  * create ngrams for the text in the input-field and output them in a table
@@ -143,8 +144,12 @@ function populateNgramTable() {
 
     ngramsArray.forEach(e => {
         let row = outputTablebody.insertRow();
-        row.insertCell(0).innerHTML = "'" + e.ngram + "'";
-        row.insertCell(1).innerHTML = e.count;
+        let ngramCell = row.insertCell(0);
+        ngramCell.innerHTML = "'" + e.ngram + "'";
+        ngramCell.className="fiftyPercent";
+        let countCell = row.insertCell(1);
+        countCell.innerHTML = e.count;
+        countCell.className="fiftyPercent";
     })
 };
 
@@ -173,21 +178,40 @@ function createNMinusOneGramTable(){
     window.globalNgrams.transitionTable = nMinusOneGramMap;
 }
 
+function switchTransitionTable() {
+    window.globalNgrams.transitionTableAsProb = !window.globalNgrams.transitionTableAsProb;
+    populateTransitionTable();
+
+    let transitionTable = document.getElementById("transition-table-button");
+    transitionTable.innerHTML = window.globalNgrams.transitionTableAsProb ? "Show counts" : "Show probabilites";
+}
+
 function populateTransitionTable() {
+    const asProb = window.globalNgrams.transitionTableAsProb;
     const transitions = window.globalNgrams.transitionTable;
-    let transitionTable = document.getElementById("transition-table");
+    let transitionTable = document.getElementById("transition-table__body");
     removeAllChildrenFromElement(transitionTable);
     for (let [sourceGram, toGrams] of transitions.entries()) {
         let row = transitionTable.insertRow();
-        row.insertCell(0).innerHTML = "'" + sourceGram + "': ";
-
-        for (let toGram of toGrams) {
-            row.insertCell(-1).innerHTML = "'" + toGram.gram + "': " + toGram.count;
+        let sourceGramCell = row.insertCell(0);
+        sourceGramCell.innerHTML = "'" + sourceGram + "': ";
+        sourceGramCell.className = "first-column";
+        if (asProb) {
+            let totalTransitions = toGrams.reduce((prevVal, currNgram) => prevVal + currNgram.count, 0);
+            for (let toGram of toGrams) {
+                row.insertCell(-1).innerHTML = `'${toGram.gram}': ${roundToTwoDecimals(100/totalTransitions*toGram.count)}%`;
+            }
+        } else {
+            for (let toGram of toGrams) {
+                row.insertCell(-1).innerHTML = `'${toGram.gram}': ${toGram.count}`;
+            }
         }
     }
 }
 
-
+function roundToTwoDecimals(num){
+    return Math.round((num + Number.EPSILON) * 100) / 100;
+}
 
 function removeAllChildrenFromElement(element){
     while (element.firstChild) { element.removeChild(element.firstChild) };
