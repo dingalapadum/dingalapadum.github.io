@@ -189,24 +189,50 @@ function switchTransitionTable() {
 function populateTransitionTable() {
     const asProb = window.globalNgrams.transitionTableAsProb;
     const transitions = window.globalNgrams.transitionTable;
-    let transitionTable = document.getElementById("transition-table__body");
-    removeAllChildrenFromElement(transitionTable);
-    for (let [sourceGram, toGrams] of transitions.entries()) {
-        let row = transitionTable.insertRow();
-        let sourceGramCell = row.insertCell(0);
-        sourceGramCell.innerHTML = "'" + sourceGram + "': ";
-        sourceGramCell.className = "first-column";
-        if (asProb) {
-            let totalTransitions = toGrams.reduce((prevVal, currNgram) => prevVal + currNgram.count, 0);
-            for (let toGram of toGrams) {
-                row.insertCell(-1).innerHTML = `'${toGram.gram}': ${roundToTwoDecimals(100/totalTransitions*toGram.count)}%`;
-            }
-        } else {
-            for (let toGram of toGrams) {
-                row.insertCell(-1).innerHTML = `'${toGram.gram}': ${toGram.count}`;
-            }
+    clearTransitionTable();
+    for (let [sourceGram, targetGrams] of transitions.entries()) {
+        let sourceGramCell = createTransitionTableSource(sourceGram);
+        document.getElementById("transition-table__body__source").appendChild(sourceGramCell);
+        let targetGramRow = createTransitionTableTargetRow(targetGrams);
+        document.getElementById("transition-table__body__targets").appendChild(targetGramRow);
+    }
+}
+
+function clearTransitionTable() {
+    let transitionTableSources = document.getElementById("transition-table__body__source");
+    removeAllChildrenFromElement(transitionTableSources);
+    let transitionTableTargets = document.getElementById("transition-table__body__targets");
+    removeAllChildrenFromElement(transitionTableTargets);
+}
+
+function createTransitionTableSource(sourceGram) {
+    const sourceGramDiv = document.createElement("div");
+    sourceGramDiv.className = "transition-table__elements";
+    sourceGramDiv.innerHTML = "'" + sourceGram + "': ";
+    return sourceGramDiv;
+}
+
+function createTransitionTableTargetRow(targetGrams) {
+    const tableRow = document.createElement("div");
+    tableRow.className = "transition-table__row";
+    const asProb = window.globalNgrams.transitionTableAsProb;
+    if (asProb) {
+        let totalTransitions = targetGrams.reduce((prevVal, currNgram) => prevVal + currNgram.count, 0);
+        for (let toGram of targetGrams) {
+            const targetGram = document.createElement("div");
+            targetGram.className = "transition-table__elements";
+            targetGram.innerHTML = `'${toGram.gram}': ${roundToTwoDecimals(100/totalTransitions*toGram.count)}%`;
+            tableRow.appendChild(targetGram);
+        }
+    } else {
+        for (let toGram of targetGrams) {
+            const targetGram = document.createElement("div");
+            targetGram.className = "transition-table__elements";
+            targetGram.innerHTML = `'${toGram.gram}': ${toGram.count}`;
+            tableRow.appendChild(targetGram);
         }
     }
+    return tableRow;
 }
 
 function roundToTwoDecimals(num){
@@ -214,7 +240,9 @@ function roundToTwoDecimals(num){
 }
 
 function removeAllChildrenFromElement(element){
-    while (element.firstChild) { element.removeChild(element.firstChild) };
+    if(element != null) {
+        while (element.firstChild) { element.removeChild(element.firstChild) };
+    }
 }
 
 /**

@@ -1,3 +1,8 @@
+:root {
+  --transition-table-elements-margin: 0.1em;
+}
+
+
 #n-select {
   width: 4em;
   height: 3em;
@@ -25,31 +30,29 @@
   width: 50%;
   resize: vertical;
   min-width: 18em;
-  margin: 0.5em;
-  margin-left: 0  ;
+  margin: 0.2em;
   flex-grow: 2;
 }
 
 #ngrams-output {
   width: 15em;
-  margin: 0.5em;
+  margin: 0.2em;
   min-width: 20%;
   flex-grow: 1;
 }
 
 th {
-  position: sticky; top: 0;
+  position: sticky;
+  top: 0;
   background-color: var(--secondary);
   border-radius: 5px;
 }
-
 
 .fiftyPercent {
   width: 50%;
 }
 
 tr td {
-  min-width: 8em;
   border: var(--border-width) solid var(--table-border-color);
 }
 
@@ -58,18 +61,17 @@ tr td:first-child {
   max-width: 5em;
 }
 
-
 .first-column {
   width: 5em;
 }
 
 .scrollable-container {
-    resize: vertical;
-    overflow: auto;
-    height: 200px;
-    border-style: solid;
-    border-radius: 0.5em;
-    border-width: thin;
+  resize: vertical;
+  overflow: auto;
+  height: 200px;
+  border-style: solid;
+  border-radius: 0.5em;
+  border-width: thin;
 }
 
 #ngrams-output__head {
@@ -81,5 +83,54 @@ tr td:first-child {
 }
 
 .dir {
-    float: right;
+  float: right;
+}
+
+.div-container {
+  border: calc(var(--border-width)) solid var(--table-border-color);
+  border-radius: 0.5em;
+  padding: 0.2em;
+}
+
+#transition-table__head {
+  display: grid;
+  grid-template-columns: 7em auto;
+}
+
+#transition-table__body {
+  resize: vertical;
+  overflow: auto;
+  height: 200px;
+  display: grid;
+  grid-template-columns: 7em auto;
+}
+
+.transition-table__row {
+  white-space: nowrap;
+  margin: 0;
+  margin-bottom: calc(var(--transition-table-elements-margin)*-1);
+}
+
+.transition-table__row  > div {
+  display: inline-block;
+}
+
+.target {
+  overflow-x: scroll;
+}
+
+.header {
+  text-align: center;
+  border-radius: 0.3em;
+  padding: 0.5em;
+  background-color: var(--secondary);
+  color: var(--color);
+}
+
+.transition-table__elements {
+  text-align: center;
+  border-radius: 0.2em;
+  padding: 0.5em;
+  border: calc(var(--border-width)*2) solid var(--table-border-color);
+  margin: var(--transition-table-elements-margin);
 }

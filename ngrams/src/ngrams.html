@@ -36,7 +36,7 @@
     <main class="container">
       <h1>Using a markov-chain of ngrams to generate text</h1>
       <p>
-        We'll explore a simple model that can be used to generate. We proceed in
+        We'll explore a simple model that can be used to generate text. We proceed in
         two phases:
       </p>
       <ol>
@@ -84,7 +84,7 @@
             In the table on the right hand side shows how many times each
             <span class="ngrams-grams-text"></span> appears in the text.
           </p>
-          <div class="two-columns">
+          <div class="two-columns div-container">
             <!-- Column 1: input area-->
             <textarea
               id="ngrams-input"
@@ -156,20 +156,16 @@
           </p>
 
           <!-- Start transition-Table -->
-          <table id="transitions-output__head">
-            <thead>
-              <tr>
-                <th class="transition-table-headers first-column">Source</th>
-                <th class="transition-table-headers">Targets</th>
-              </tr>
-            </thead>
-          </table>
-          <div class="scrollable-container">
-            <table id="transition-table">
-              <tbody id="transition-table__body">
+          <div id="transition-table" class="div-container">
+            <div id="transition-table__head">
+              <div class="source header">Source</div>
+              <div class="target header">Targets</div>
+            </div>
 
-              </tbody>
-            </table>
+            <div id="transition-table__body">
+              <div id="transition-table__body__source"></div>
+              <div id="transition-table__body__targets" class="target"></div>
+            </div>
           </div>
 
           <p>
