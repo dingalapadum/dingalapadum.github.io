@@ -31,6 +31,11 @@ window.globalNgrams.transitionTableAsProb = false;
 // Used for textgeneration. Which is the current gram?
 window.globalNgrams.currGram = "";
 
+// The generated text
+window.globalNgrams.generatedText = "";
+
+// how many more letters to write
+window.globalNgrams.stepsLeft = 20;
 
 
 /**
@@ -109,7 +114,7 @@ function computeNgramMapCharacters() {
  * @returns Map of (ngram: count)
  */
 function computeNgramMapWords() {
-    alert("hell");
+    alert("I'm really sorry, I have not implemented this yet");
 }
 
 /**
@@ -272,7 +277,30 @@ function removeAllChildrenFromElement(element){
 }
 
 
-function generateText(){
+async function generateText(){
+    document.querySelectorAll(".deadend").forEach(e => e.remove());
+    window.globalNgrams.stepsLeft = document.getElementById("steps-left").value;
+    let initialNumberOfSteps = window.globalNgrams.stepsLeft;
+    while (window.globalNgrams.stepsLeft > 0) {
+        try {
+            let sleepTime = (10-document.getElementById("speed").value)*100;
+            generateNextLetter();
+            await sleep(sleepTime);
+        } catch (error) {
+            return;
+        }
+        window.globalNgrams.stepsLeft--;
+        document.getElementById("steps-left").value = window.globalNgrams.stepsLeft;
+    }
+    document.getElementById("steps-left").value = initialNumberOfSteps;
+    updateScroll();
+}
+
+function sleep(ms) {
+    return new Promise(res => setTimeout(res, ms));
+  }
+
+function generateNextLetter() {
     let outputParagraph = document.getElementById("textOutput");
     
     let transitionTable = window.globalNgrams.transitionTable;
@@ -284,23 +312,23 @@ function generateText(){
         let idx = Math.floor(Math.random()*nGrams);
         let grams = [...transitionTable.keys()];
         currGram = grams[idx];
-        outputParagraph.innerText = currGram;
-    }
-    
-
-    let gramSize = window.globalNgrams.n;
-    for (let i = 0; i < 20; i++) {
+        window.globalNgrams.generatedText = currGram;
+    }else {
         try {
+            let gramSize = window.globalNgrams.n;
             currGram = getNextGram(transitionTable.get(currGram));
-            outputParagraph.innerText += currGram.slice(gramSize-2);
+            window.globalNgrams.generatedText += currGram.slice(gramSize-2);
         } catch (error) {
-            const textnode = document.createTextNode("Reached dead end. Restarting with a random gram");
-            outputParagraph.appendChild(textnode);
-            currGram = "";
-            break;
+            const paragraph = document.createElement("p");
+            paragraph.innerText = "Reached dead end. Restarting with a random gram.";
+            paragraph.className="deadend";
+            document.getElementById("scrollable-output").after(paragraph);
+            console.log(currGram);
+            window.globalNgrams.currGram = "";
+            throw "dead end";
         }
     }
-    console.log(currGram);
+    outputParagraph.innerText = window.globalNgrams.generatedText;
     window.globalNgrams.currGram = currGram;
 }
 
@@ -326,8 +354,15 @@ function getNextGram(targetGrams) {
 
 function clearGeneratedText() {
     let ouputParagraph = document.getElementById("textOutput");
-    ouputParagraph.innerText = "";
+    document.querySelectorAll(".deadend").forEach(e => e.remove());
+    window.globalNgrams.generatedText = "";
+    ouputParagraph.innerText = window.globalNgrams.generatedText;
     window.globalNgrams.currGram = "";
+}
+
+function updateScroll(){
+    var element = document.getElementById("scrollable-output");
+    element.scrollTop = element.scrollHeight;
 }
 
 /**

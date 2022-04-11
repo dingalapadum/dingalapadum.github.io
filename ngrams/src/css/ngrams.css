@@ -2,9 +2,13 @@
   --transition-table-elements-margin: 0.1em;
 }
 
-
 #n-select {
-  width: 4em;
+  width: 5em;
+  height: 3em;
+}
+
+#steps-left {
+  width: 5em;
   height: 3em;
 }
 
@@ -134,4 +138,26 @@ tr td:first-child {
   padding: 0.5em;
   border: calc(var(--border-width)*2) solid var(--table-border-color);
   margin: var(--transition-table-elements-margin);
+}
+
+.smallish {
+  min-width: 8em;
+  width: 30%;
+}
+
+#speed {
+  width: 40%;
+}
+
+.text-gen-ctrl-one {
+  display: flex;
+  justify-content: flex-start;
+  align-content: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+#textOutput{
+  padding: 1em;
 }
