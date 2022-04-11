@@ -37,6 +37,12 @@ window.globalNgrams.generatedText = "";
 // how many more letters to write
 window.globalNgrams.stepsLeft = 20;
 
+// how long to sleep between steps
+window.globalNgrams.sleepTime = 0;
+
+// this is just to avoid having people clicking multiple times
+window.globalNgrams.generating = false;
+
 
 /**
  * create ngrams for the text in the input-field and output them in a table
@@ -57,7 +63,7 @@ function ngrams() {
  * text: is the text to analyze
  */
  function setGlobalInputs() {
-    window.globalNgrams.type = document.getElementById("ngrams-type").value;
+    //window.globalNgrams.type = document.getElementById("ngrams-type").value;
     window.globalNgrams.n = +document.getElementById("n-select").value;
     window.globalNgrams.text = document.getElementById("ngrams-input").value;
 }
@@ -218,7 +224,6 @@ function switchTransitionTable() {
 }
 
 function populateTransitionTable() {
-    const asProb = window.globalNgrams.transitionTableAsProb;
     const transitions = window.globalNgrams.transitionTable;
     clearTransitionTable();
     for (let [sourceGram, targetGrams] of transitions.entries()) {
@@ -276,16 +281,18 @@ function removeAllChildrenFromElement(element){
     }
 }
 
-
 async function generateText(){
+    if (window.globalNgrams.generating) {
+        console.log("already generating text. wait until text generation is done or stopped");
+        return;
+    }
+    window.globalNgrams.generating = true;
     document.querySelectorAll(".deadend").forEach(e => e.remove());
     window.globalNgrams.stepsLeft = document.getElementById("steps-left").value;
     let initialNumberOfSteps = window.globalNgrams.stepsLeft;
     while (window.globalNgrams.stepsLeft > 0) {
         try {
-            let sleepTime = (10-document.getElementById("speed").value)*100;
-            generateNextLetter();
-            await sleep(sleepTime);
+            await generateNextLetter();
         } catch (error) {
             return;
         }
@@ -294,18 +301,24 @@ async function generateText(){
     }
     document.getElementById("steps-left").value = initialNumberOfSteps;
     updateScroll();
+    window.globalNgrams.generating = false;
 }
 
 function sleep(ms) {
     return new Promise(res => setTimeout(res, ms));
-  }
+}
 
-function generateNextLetter() {
+function updateSpeed(value) {
+    document.getElementById("text-gen-info").style.display = value>=9 ? "none": "block";
+    window.globalNgrams.sleepTime = (10-value)*200;
+}
+
+async function generateNextLetter() {
     let outputParagraph = document.getElementById("textOutput");
-    
     let transitionTable = window.globalNgrams.transitionTable;
-
     let currGram = window.globalNgrams.currGram;
+
+    
     // Generate initial gram if needed
     if (currGram == "") {
         let nGrams = transitionTable.size;
@@ -316,9 +329,13 @@ function generateNextLetter() {
     }else {
         try {
             let gramSize = window.globalNgrams.n;
-            currGram = getNextGram(transitionTable.get(currGram));
+            let oldGram = currGram;
+            let targetGrams = transitionTable.get(currGram);
+            currGram = getNextGram(targetGrams);
+            await updateInfo(oldGram, currGram, targetGrams);
             window.globalNgrams.generatedText += currGram.slice(gramSize-2);
         } catch (error) {
+            console.log(error);
             const paragraph = document.createElement("p");
             paragraph.innerText = "Reached dead end. Restarting with a random gram.";
             paragraph.className="deadend";
@@ -330,6 +347,32 @@ function generateNextLetter() {
     }
     outputParagraph.innerText = window.globalNgrams.generatedText;
     window.globalNgrams.currGram = currGram;
+}
+
+async function updateInfo(currGram, nextGram, targetGrams) {
+    if (window.globalNgrams.sleepTime == 0) {return;}
+
+    // clear info-table
+    document.getElementById("current-gram").innerText= "";
+    //removeAllChildrenFromElement(document.getElementById("candidate-grams"));
+    
+    document.getElementById("candidate-grams").style.visibility = "hidden";
+    document.getElementById("chosen-gram").innerText= "";
+    document.getElementById("appended-char").innerText = "";
+    let targetGramRow = createTransitionTableTargetRow(targetGrams);
+
+    //popluate infotable step by step
+    document.getElementById("current-gram").innerText = `"${currGram}"`;
+    await sleep(window.globalNgrams.sleepTime);
+    removeAllChildrenFromElement(document.getElementById("candidate-grams"));
+    document.getElementById("candidate-grams").style.visibility = "visible";
+    document.getElementById("candidate-grams").appendChild(targetGramRow);
+    targetGramRow.id="candidates";
+    await sleep(window.globalNgrams.sleepTime);
+    document.getElementById("chosen-gram").innerText = `"${nextGram}"`;
+    await sleep(window.globalNgrams.sleepTime);
+    document.getElementById("appended-char").innerText = `"${nextGram.slice(window.globalNgrams.n-2)}"`;
+    await sleep(window.globalNgrams.sleepTime);
 }
 
 /**
@@ -358,6 +401,10 @@ function clearGeneratedText() {
     window.globalNgrams.generatedText = "";
     ouputParagraph.innerText = window.globalNgrams.generatedText;
     window.globalNgrams.currGram = "";
+}
+
+function stopGeneratingText() {
+    window.globalNgrams.stepsLeft = 0;
 }
 
 function updateScroll(){

@@ -77,9 +77,10 @@
 
         <!-- Try it yourself! -->
         <p>
-          Why don't you try it yourself? Choose a N and a Gram-type and type
+          Why don't you try it yourself? Choose a gram-size type
           some text
         </p>
+        <div class="text-gen-ctrl">
         <input
           type="number"
           name="n-select"
@@ -88,14 +89,17 @@
           min="2"
           max="30"
           value="2"
-          onchange="ngrams()"
-          onkeyup="if(this.value > 30) this.value = 30;"
+          onchange="ngrams(); if(this.value >= 7) document.getElementById('gramsizeWarn').innerText = 'Large values with big texts can slow down your computer! But feel free to try ;)';"
+          onkeyup="if(this.value > 30) this.value = 30; "
         />
+        <output id="gramsizeWarn"></output>
+      </div>
+        <!--
         <select name="ngrams-type" id="ngrams-type" onchange="ngrams()">
           <option value="character">Characters</option>
           <option value="word">Words</option>
         </select>
-
+-->
         <p>
           In the table on the right hand side shows how many times each
           <span class="ngrams-grams-text"></span> appears in the text.
@@ -105,7 +109,7 @@
           <textarea
             id="ngrams-input"
             oninput="ngrams()"
-            placeholder="Type something..."
+            placeholder="Type something... Or just copy a larger textbody from the internet"
           ></textarea>
 
           <!-- Column 2: output area-->
@@ -209,7 +213,7 @@
         
 
         <!-- TEXT-GEN-CONTROLS-->
-        <div class="text-gen-ctrl-one">
+        <div class="text-gen-ctrl">
           <!-- Number of characters-Control -->
           
           <p>Write </p>
@@ -225,23 +229,38 @@
         /> <p>characters</p>
       </div>
       
-      <div class="text-gen-ctrl-one">
-        <!-- Speed-Control-->
+      <div class="text-gen-ctrl">
+        <!-- Speed-Control -->
         <label for="speed">Speed:</label>
         <input type="range" class="smallish" id="speed" name="speed" value="10" min="0" max="10" 
-        oninput="speedOutput.value = this.value" autocomplete="off">
+        oninput="speedOutput.value = this.value; updateSpeed(this.value)" autocomplete="off">
         <output id="speedOutput">10</output>
       </div>
 
-      <div class="text-gen-ctrl-one">
-        <button onclick="generateText()" class="smallish">Generate</button>
-
+      <!-- Output-Info-->
+      <div id="text-gen-info" style="display: none;">
+        <p>Current gram: <output id="current-gram"></output></p>
+        <p>Candidates: <output id="candidate-grams">
+        </output>
+      </p>
+        <p>Chosen gram: <output id="chosen-gram"></output></p>
+        <p>Appending: <output id="appended-char"></output></p>
       </div>
+
+      <!-- GENERATE -->
+      <div class="text-gen-ctrl">
+        <button onclick="generateText()">Generate</button>
+      </div>
+
+      <!-- Generated Text -->
       <div id="scrollable-output" class="scrollable-container">
         <p id="textOutput"></p>
       </div>
-      <div class="text-gen-ctrl-one">
+
+      <!-- CLEAR -->
+      <div class="text-gen-ctrl">
         <button onclick="clearGeneratedText()" class="smallish">Clear</button>
+        <button onclick="stopGeneratingText()" class="smallish">Stop</button>
       </div>
 
       </section>

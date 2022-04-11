@@ -149,7 +149,7 @@ tr td:first-child {
   width: 40%;
 }
 
-.text-gen-ctrl-one {
+.text-gen-ctrl {
   display: flex;
   justify-content: flex-start;
   align-content: flex-start;
@@ -160,4 +160,16 @@ tr td:first-child {
 
 #textOutput{
   padding: 1em;
+}
+
+#text-gen-info{
+  border-radius: 0.2em;
+  padding: 0.5em;
+  border: calc(var(--border-width)*2) solid var(--table-border-color);
+  margin-bottom: 2em;
+  overflow: auto;
+}
+
+#scrollable-output {
+  margin-bottom: 0.5em;
 }
