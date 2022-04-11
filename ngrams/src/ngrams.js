@@ -146,10 +146,10 @@ function populateNgramTable() {
         let row = outputTablebody.insertRow();
         let ngramCell = row.insertCell(0);
         ngramCell.innerHTML = "'" + e.ngram + "'";
-        ngramCell.className="fiftyPercent";
+        ngramCell.className="fifty-percent";
         let countCell = row.insertCell(1);
         countCell.innerHTML = e.count;
-        countCell.className="fiftyPercent";
+        countCell.className="fifty-percent";
     })
 };
 
