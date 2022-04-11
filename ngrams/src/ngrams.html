@@ -27,162 +27,190 @@
         <a href="#">upgrade your browser</a> to improve your experience.
       </p>
     <![endif]-->
+
+    <!-------------- LIGHTSWITCH ----------------->
     <img
       src="resources/light.png"
       onclick="switchLights()"
       id="themeswitcher"
       alt="themeswitcher"
     />
+
+    <!------------------ MAIN -------------------->
     <main class="container">
       <h1>Using a markov-chain of ngrams to generate text</h1>
       <p>
-        We'll explore a simple model that can be used to generate text. We proceed in
-        two phases:
+        We'll explore a simple model that can be used to generate 'human like' text. We
+        proceed in two phases:
       </p>
       <ol>
         <li><a href="#training">We use some text to train our model</a></li>
-        <li>We sample the trained model to output a random text</li>
+        <li>
+          <a href="#generating"
+            >We sample the trained model to output a random text</a
+          >
+        </li>
       </ol>
 
-      <section title="Basic concepts">
-        <h2 id="training">Training the model</h2>
-        <!-- NGRAMS -->
-        <section title="ngrams">
-          <h3>What is a N-Gram</h3>
-          <blockquote cite="https://en.wikipedia.org/wiki/N-gram">
-            [...] an n-gram is a contiguous sequence of n items from a given
-            sample of text or speech. The items can be phonemes, syllables,
-            letters, words or base pairs according to the application.
-            <footer>
-              <cite>
-                <a href="https://en.wikipedia.org/wiki/N-gram"
-                  >https://en.wikipedia.org/wiki/N-gram</a
-                >
-              </cite>
-            </footer>
-          </blockquote>
+      <h2 id="training">1. Training the model</h2>
+      <p>
+        The idea is simple: We want our model to <em>learn</em> to write by
+        'reading' some text. A very naïve idea to achieve this would be to
+        do a frequency count of each letter. We then would generate the text
+        according to the probability given by the frequency.
+      </p>
+      <!-- NGRAMS -->
+      <section title="ngrams">
+        <h3>What is a N-Gram?</h3>
+        <blockquote cite="https://en.wikipedia.org/wiki/N-gram">
+          [...] an n-gram is a contiguous sequence of n items from a given
+          sample of text or speech. The items can be phonemes, syllables,
+          letters, words or base pairs according to the application.
+          <footer>
+            <cite>
+              <a href="https://en.wikipedia.org/wiki/N-gram"
+                >https://en.wikipedia.org/wiki/N-gram</a
+              >
+            </cite>
+          </footer>
+        </blockquote>
 
-          <!-- Try it yourself! -->
-          <h4>Try it yourself!</h4>
-          <p>Choose a N and a Gram-type and type some text</p>
-          <input
-            type="number"
-            name="n-select"
-            id="n-select"
-            min="1"
-            max="6"
-            value="2"
-            onchange="ngrams()"
-            onkeyup="if(this.value > 6) this.value = null;"
-          />
-          <select name="ngrams-type" id="ngrams-type" onchange="ngrams()">
-            <option value="character">Characters</option>
-            <option value="word">Words</option>
-          </select>
+        <!-- Try it yourself! -->
+        <p>
+          Why don't you try it yourself? Choose a N and a Gram-type and type
+          some text
+        </p>
+        <input
+          type="number"
+          name="n-select"
+          id="n-select"
+          min="2"
+          max="6"
+          value="2"
+          onchange="ngrams()"
+          onkeyup="if(this.value > 6) this.value = null;"
+        />
+        <select name="ngrams-type" id="ngrams-type" onchange="ngrams()">
+          <option value="character">Characters</option>
+          <option value="word">Words</option>
+        </select>
 
-          <p>
-            In the table on the right hand side shows how many times each
-            <span class="ngrams-grams-text"></span> appears in the text.
-          </p>
-          <div class="two-columns div-container">
-            <!-- Column 1: input area-->
-            <textarea
-              id="ngrams-input"
-              oninput="ngrams()"
-              placeholder="Type something..."
-            ></textarea>
+        <p>
+          In the table on the right hand side shows how many times each
+          <span class="ngrams-grams-text"></span> appears in the text.
+        </p>
+        <div class="two-columns div-container">
+          <!-- Column 1: input area-->
+          <textarea
+            id="ngrams-input"
+            oninput="ngrams()"
+            placeholder="Type something..."
+          ></textarea>
 
-            <!-- Column 2: output area-->
-            <div id="ngrams-output">
-              <table id="ngrams-output__head">
-                <thead>
-                  <tr>
-                    <th
-                      id="ngrams-grams"
-                      class="ngram-table-headers"
-                      onclick="populateTableSortedBy('ngram')"
-                    >
-                      <span class="ngrams-grams-text"></span>
-                      <span id="ngram-dir" class="dir"></span>
-                    </th>
-                    <th
-                      id="ngrams-count"
-                      class="ngram-table-headers"
-                      onclick="populateTableSortedBy('count')"
-                    >
-                      <span>count</span>
-                      <span id="count-dir" class="dir">↑</span>
-                    </th>
-                  </tr>
-                </thead>
+          <!-- Column 2: output area-->
+          <div id="ngrams-output">
+            <table id="ngrams-output__head">
+              <thead>
+                <tr>
+                  <th
+                    id="ngrams-grams"
+                    class="ngram-table-headers"
+                    onclick="populateTableSortedBy('ngram')"
+                  >
+                    <span class="ngrams-grams-text"></span>
+                    <span id="ngram-dir" class="dir"></span>
+                  </th>
+                  <th
+                    id="ngrams-count"
+                    class="ngram-table-headers"
+                    onclick="populateTableSortedBy('count')"
+                  >
+                    <span>count</span>
+                    <span id="count-dir" class="dir">↑</span>
+                  </th>
+                </tr>
+              </thead>
+            </table>
+            <div class="scrollable-container">
+              <table id="ngrams-output__bodytable">
+                <tbody id="ngrams-output__bodytable__body"></tbody>
               </table>
-              <div class="scrollable-container">
-                <table id="ngrams-output__bodytable">
-                  <tbody id="ngrams-output__bodytable__body"></tbody>
-                </table>
-              </div>
             </div>
           </div>
-          <!-- END: two-columns -->
+        </div>
+        <!-- END: two-columns -->
 
-          <h3>All right, but what do we do with these  <span class="ngrams-grams-text"></span>?</h3>
-          <p>
-            We regard a <span class="ngrams-grams-text"></span> as a transition
-            from a <span class="ngrams-grams-text-minus-one"></span> to another
-            <span class="ngrams-grams-text-minus-one"></span>. Thus counting
-            <span class="ngrams-grams-text"></span> is the same as counting
-            specific transitions between
-            <span class="ngrams-grams-text-minus-one"></span>s.
-          </p>
-          <p>
-            Example: <br />
-            The 4-gram '<span class="four-gram-example"></span>' can be seen as
-            a transition from the 3-gram '<span
-              class="three-gram-example-one"
-            ></span
-            >' to the 3-gram '<span class="three-gram-example-two"></span>'.
-            <br />
-            I.e.:<br />
-            '<span class="four-gram-example"></span>' = '<span
-              class="three-gram-example-one"
-            ></span
-            >' ➛ '<span class="three-gram-example-two"></span>'
-          </p>
-          <p>
-            So now for each <span class="ngrams-grams-text-minus-one"></span> we
-            proceed to write down all the
-            <span class="ngrams-grams-text-minus-one"></span>s it is followed by
-            together with the corresponding count.
-          </p>
+        <h3>
+          All right, but what do we do with these
+          <span class="ngrams-grams-text"></span>?
+        </h3>
+        <p>
+          We regard a <span class="ngrams-grams-text"></span> as a transition
+          from a <span class="ngrams-grams-text-minus-one"></span> to another
+          <span class="ngrams-grams-text-minus-one"></span>. Thus counting
+          <span class="ngrams-grams-text"></span> is the same as counting
+          specific transitions between
+          <span class="ngrams-grams-text-minus-one"></span>s.
+        </p>
+        <p>
+          Example: <br />
+          The 4-gram '<span class="four-gram-example"></span>' can be seen as a
+          transition from the 3-gram '<span
+            class="three-gram-example-one"
+          ></span
+          >' to the 3-gram '<span class="three-gram-example-two"></span>'.
+          <br />
+          I.e.:<br />
+          '<span class="four-gram-example"></span>' = '<span
+            class="three-gram-example-one"
+          ></span
+          >' ➛ '<span class="three-gram-example-two"></span>'
+        </p>
+        <p>
+          So now for each <span class="ngrams-grams-text-minus-one"></span> we
+          proceed to write down all the
+          <span class="ngrams-grams-text-minus-one"></span>s it is followed by
+          together with the corresponding count.
+        </p>
 
-          <!-- Start transition-Table -->
-          <div id="transition-table" class="div-container">
-            <div id="transition-table__head">
-              <div class="source header">Source</div>
-              <div class="target header">Targets</div>
-            </div>
-
-            <div id="transition-table__body">
-              <div id="transition-table__body__source"></div>
-              <div id="transition-table__body__targets" class="target"></div>
-            </div>
+        <!-- Start transition-Table -->
+        <div id="transition-table" class="div-container">
+          <div id="transition-table__head">
+            <div class="source header">Source</div>
+            <div class="target header">Targets</div>
           </div>
 
-          <p>
-            Using the counts  we compute the probabilty of the respective transition.
-          </p>
-          <button id="transition-table-button" onclick="switchTransitionTable()">
-            Show probabilites
-          </button>
+          <div id="transition-table__body">
+            <div id="transition-table__body__source"></div>
+            <div id="transition-table__body__targets" class="target"></div>
+          </div>
+        </div>
 
-          <p>
-            Note that transitioning from a source
-            <span class="ngrams-grams-text-minus-one"> </span> to a target
-            <span class="ngrams-grams-text-minus-one"></span> is the same as
-            appending a character to the source
-            <span class="ngrams-grams-text-minus-one"></span>.
-          </p>
-        </section>
+        <p>
+          Using the counts we compute the probability of the respective
+          transition.
+        </p>
+        <button id="transition-table-button" onclick="switchTransitionTable()">
+          Show probabilities
+        </button>
+
+        <p>
+          Note that transitioning from a source
+          <span class="ngrams-grams-text-minus-one"> </span> to a target
+          <span class="ngrams-grams-text-minus-one"></span> is the same as
+          appending a character to the source
+          <span class="ngrams-grams-text-minus-one"></span>.
+        </p>
+
+        <h1 id="generating">2. Text generation</h1>
+
+        <p>So now that we trained our model we can sample it to generate some text</p>
+        <button onclick="generateText()">Generate</button>
+
+        <p id="textOutput">
+
+        </p>
+
       </section>
     </main>
 
