@@ -1,11 +1,37 @@
+// The object that holds all global information
 window.globalNgrams = {};
+
+// By what the table containg the (grams: count) should be sorted by
+// Is one of either: ngramAsc, ngramDesc, countAsc or countDesc
 window.globalNgrams.sortBy = "countDesc";
+
+// What are we using as a gram? a Character or a word?
+// TODO: actually for the moment this is only characters
 window.globalNgrams.type = "character";
+
+// The input text, i.e. the one from which we learn the distrbution
 window.globalNgrams.text = "";
+
+// The gram-size we count occurrences of
+// I.e n-1 is the size of the grams between transitions
 window.globalNgrams.n = 2;
+
+// Maps grams to a count - the number of times the gram appears
 window.globalNgrams.ngramMap = {};
+
+// A map that for each gram stores the 'follow-up grams'
+// <gramSource, [(gramTarget: count)]>
+// E.g. "a": [{gram: "s", count: 3}, {gram: "d", count: 5}] means 
+// that 3 times a 's' came after an 'a' and 5 times a 'd' came after an 'a'
 window.globalNgrams.transitionTable = {};
+
+// Whether the transitiontable should be dispalyed with the counts or with the probabilities
 window.globalNgrams.transitionTableAsProb = false;
+
+// Used for textgeneration. Which is the current gram?
+window.globalNgrams.currGram = "";
+
+
 
 /**
  * create ngrams for the text in the input-field and output them in a table
@@ -156,7 +182,7 @@ function populateNgramTable() {
 /**
  * Print ngrams into a list of list
  * 1. list is of (n-1)-grams
- * 2. list the '-1'-letter of the ngram with the number of occurrences
+ * 2. list is the list of the 'n-1'-gram that follow together with the number of occurrences number of occurrences
  */
 function createNMinusOneGramTable(){
     let n = window.globalNgrams.n;
@@ -243,6 +269,65 @@ function removeAllChildrenFromElement(element){
     if(element != null) {
         while (element.firstChild) { element.removeChild(element.firstChild) };
     }
+}
+
+
+function generateText(){
+    let outputParagraph = document.getElementById("textOutput");
+    
+    let transitionTable = window.globalNgrams.transitionTable;
+
+    let currGram = window.globalNgrams.currGram;
+    // Generate initial gram if needed
+    if (currGram == "") {
+        let nGrams = transitionTable.size;
+        let idx = Math.floor(Math.random()*nGrams);
+        let grams = [...transitionTable.keys()];
+        currGram = grams[idx];
+        outputParagraph.innerText = currGram;
+    }
+    
+
+    let gramSize = window.globalNgrams.n;
+    for (let i = 0; i < 20; i++) {
+        try {
+            currGram = getNextGram(transitionTable.get(currGram));
+            outputParagraph.innerText += currGram.slice(gramSize-2);
+        } catch (error) {
+            const textnode = document.createTextNode("Reached dead end. Restarting with a random gram");
+            outputParagraph.appendChild(textnode);
+            currGram = "";
+            break;
+        }
+    }
+    console.log(currGram);
+    window.globalNgrams.currGram = currGram;
+}
+
+/**
+ * Returns a gram at random from the targetGrams according to the distribution
+ * given by the counts
+ *
+ * @param {Object[]} targetGrams
+ * @param {string} targetGrams[].gram
+ * @param {number} targetGrams[].count
+ */
+function getNextGram(targetGrams) {
+    let totalCount = targetGrams.reduce((prevVal, currNgram) => prevVal + currNgram.count, 0);
+    let idx = Math.floor(Math.random()*totalCount);
+    let currCandidate = 0;
+    let accum =  targetGrams[currCandidate].count;
+    while (accum <= idx) {
+        currCandidate++;
+        accum += targetGrams[currCandidate].count;
+    }
+    return targetGrams[currCandidate].gram;
+}
+
+function clearGeneratedText() {
+    let ouputParagraph = document.getElementById("textOutput");
+    ouputParagraph.innerText = "";
+    window.globalNgrams.currGram = "";
 }
 
 /**

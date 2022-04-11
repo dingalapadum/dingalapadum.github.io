@@ -204,12 +204,13 @@
 
         <h1 id="generating">2. Text generation</h1>
 
-        <p>So now that we trained our model we can sample it to generate some text</p>
+        <p>So now that we trained our model we can sample it to generate some text. We'll start by choosing a gram uniformly at random. Of course there are other ways to do this, like considering frequencies or maybe only allowing grams which occur after a point '.'. For our purposes this is not that important.</p>
         <button onclick="generateText()">Generate</button>
 
         <p id="textOutput">
 
         </p>
+        <button onclick="clearGeneratedText()">Clear</button>
 
       </section>
     </main>
