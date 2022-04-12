@@ -2,13 +2,23 @@
   --transition-table-elements-margin: 0.1em;
 }
 
+
+.gram-ctrl {
+  display: flex;
+  justify-content: flex-start;
+  align-content: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
 #n-select {
   width: 5em;
   height: 3em;
 }
 
 #steps-left {
-  width: 5em;
+  width: 7em;
   height: 3em;
 }
 

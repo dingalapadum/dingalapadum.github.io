@@ -83,7 +83,7 @@ function computeNgramMap() {
 }
 
 /**
- * Update all occurrences of 'n-gram' and gram-type in the text
+ * Update all occurrences of 'n-gram' and gram-type in the readers-text
  * - the n in n-gram should be replaced with the correct number
  * - the type should either be 'character' or 'word'
  */
@@ -215,6 +215,9 @@ function createNMinusOneGramTable(){
     window.globalNgrams.transitionTable = nMinusOneGramMap;
 }
 
+/**
+ * Switch between 'counts' and probabilities in tranisitonTable
+ */
 function switchTransitionTable() {
     window.globalNgrams.transitionTableAsProb = !window.globalNgrams.transitionTableAsProb;
     populateTransitionTable();
@@ -223,6 +226,9 @@ function switchTransitionTable() {
     transitionTable.innerHTML = window.globalNgrams.transitionTableAsProb ? "Show counts" : "Show probabilites";
 }
 
+/**
+ * 'Pretty print' the transitionTable into the html-document
+ */
 function populateTransitionTable() {
     const transitions = window.globalNgrams.transitionTable;
     clearTransitionTable();
@@ -234,6 +240,9 @@ function populateTransitionTable() {
     }
 }
 
+/**
+ * Emtpy the transitionTable
+ */
 function clearTransitionTable() {
     let transitionTableSources = document.getElementById("transition-table__body__source");
     removeAllChildrenFromElement(transitionTableSources);
@@ -241,6 +250,11 @@ function clearTransitionTable() {
     removeAllChildrenFromElement(transitionTableTargets);
 }
 
+/**
+ * Create a single element for the "Source-Gram-Column" in the HTML-Transition-Table
+ * @param {string} sourceGram 
+ * @returns div-element
+ */
 function createTransitionTableSource(sourceGram) {
     const sourceGramDiv = document.createElement("div");
     sourceGramDiv.className = "transition-table__elements";
@@ -248,6 +262,13 @@ function createTransitionTableSource(sourceGram) {
     return sourceGramDiv;
 }
 
+/**
+ * Create a row of div-elements containg the targetGram with the correpsonding count
+ * @param {Object[]} targetGrams 
+ * @param {string} targetGrams[].gram
+ * @param {number} targetGrams[].count
+ * @returns the targets of a table row
+ */
 function createTransitionTableTargetRow(targetGrams) {
     const tableRow = document.createElement("div");
     tableRow.className = "transition-table__row";
@@ -275,12 +296,12 @@ function roundToTwoDecimals(num){
     return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
-function removeAllChildrenFromElement(element){
-    if(element != null) {
-        while (element.firstChild) { element.removeChild(element.firstChild) };
-    }
-}
 
+/**
+ * As the name suggests: this is the method to generate text
+ * Basically we sample another letter until we are done or have an error
+ * @returns immediately on error or if the method is already running (note that this method is async)
+ */
 async function generateText(){
     if (window.globalNgrams.generating) {
         console.log("already generating text. wait until text generation is done or stopped");
@@ -304,20 +325,10 @@ async function generateText(){
     window.globalNgrams.generating = false;
 }
 
-function sleep(ms) {
-    return new Promise(res => setTimeout(res, ms));
-}
-
-function updateSpeed(value) {
-    document.getElementById("text-gen-info").style.display = value>=9 ? "none": "block";
-    window.globalNgrams.sleepTime = (10-value)*200;
-}
-
 async function generateNextLetter() {
     let outputParagraph = document.getElementById("textOutput");
     let transitionTable = window.globalNgrams.transitionTable;
     let currGram = window.globalNgrams.currGram;
-
     
     // Generate initial gram if needed
     if (currGram == "") {
@@ -349,6 +360,33 @@ async function generateNextLetter() {
     window.globalNgrams.currGram = currGram;
 }
 
+/**
+ * Returns a gram at random from the targetGrams according to the distribution
+ * given by the counts
+ *
+ * @param {Object[]} targetGrams
+ * @param {string} targetGrams[].gram
+ * @param {number} targetGrams[].count
+ */
+ function getNextGram(targetGrams) {
+    let totalCount = targetGrams.reduce((prevVal, currNgram) => prevVal + currNgram.count, 0);
+    let idx = Math.floor(Math.random()*totalCount);
+    let currCandidate = 0;
+    let accum =  targetGrams[currCandidate].count;
+    while (accum <= idx) {
+        currCandidate++;
+        accum += targetGrams[currCandidate].count;
+    }
+    return targetGrams[currCandidate].gram;
+}
+
+/**
+ * This method refreshes the "Info-Screen" during text-generation
+ * @param {*} currGram 
+ * @param {*} nextGram 
+ * @param {*} targetGrams 
+ * @returns 
+ */
 async function updateInfo(currGram, nextGram, targetGrams) {
     if (window.globalNgrams.sleepTime == 0) {return;}
 
@@ -375,26 +413,30 @@ async function updateInfo(currGram, nextGram, targetGrams) {
     await sleep(window.globalNgrams.sleepTime);
 }
 
-/**
- * Returns a gram at random from the targetGrams according to the distribution
- * given by the counts
- *
- * @param {Object[]} targetGrams
- * @param {string} targetGrams[].gram
- * @param {number} targetGrams[].count
- */
-function getNextGram(targetGrams) {
-    let totalCount = targetGrams.reduce((prevVal, currNgram) => prevVal + currNgram.count, 0);
-    let idx = Math.floor(Math.random()*totalCount);
-    let currCandidate = 0;
-    let accum =  targetGrams[currCandidate].count;
-    while (accum <= idx) {
-        currCandidate++;
-        accum += targetGrams[currCandidate].count;
-    }
-    return targetGrams[currCandidate].gram;
+function updateStepsLeft(value) {
+    if(value > 1000) {document.getElementById("steps-left") = 1000;}
+    window.globalNgrams.stepsLeft = value;
 }
 
+
+function updateSpeed(value) {
+    document.getElementById("speedOutput").value = value;
+    document.getElementById("text-gen-info").style.display = value>=9 ? "none": "block";
+    window.globalNgrams.sleepTime = (10-value)*200;
+}
+
+/**
+ * Autoscroll to the bottom if text overflows the output-box
+ */
+function updateScroll(){
+    var element = document.getElementById("scrollable-output");
+    element.scrollTop = element.scrollHeight;
+}
+
+/**
+ * Called when the "clear"-button is clicked
+ * Clears the output-text-box (and nothing else! does not stop text-generation)
+ */
 function clearGeneratedText() {
     let ouputParagraph = document.getElementById("textOutput");
     document.querySelectorAll(".deadend").forEach(e => e.remove());
@@ -403,14 +445,24 @@ function clearGeneratedText() {
     window.globalNgrams.currGram = "";
 }
 
+/**
+ * Called when the "stop"-button is clicked - basically clear the output-text-box
+ */
 function stopGeneratingText() {
     window.globalNgrams.stepsLeft = 0;
 }
 
-function updateScroll(){
-    var element = document.getElementById("scrollable-output");
-    element.scrollTop = element.scrollHeight;
+// Utilities used in several functions
+function removeAllChildrenFromElement(element){
+    if(element != null) {
+        while (element.firstChild) { element.removeChild(element.firstChild) };
+    }
 }
+
+function sleep(ms) {
+    return new Promise(res => setTimeout(res, ms));
+}
+
 
 /**
  * INIT-RUN

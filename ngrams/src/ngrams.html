@@ -57,7 +57,8 @@
         The idea is simple: We want our model to <em>learn</em> to write by
         'reading' some text. A very naïve idea to achieve this would be to
         do a frequency count of each letter. We then would generate the text
-        according to the probability given by the frequency.
+        according to the probability given by the frequency. Here we will try 
+        to do a tiny improvement on that idea.
       </p>
       <!-- NGRAMS -->
       <section title="ngrams">
@@ -80,7 +81,7 @@
           Why don't you try it yourself? Choose a gram-size type
           some text
         </p>
-        <div class="text-gen-ctrl">
+        <div class="gram-ctrl">
         <input
           type="number"
           name="n-select"
@@ -90,7 +91,7 @@
           max="30"
           value="2"
           onchange="ngrams(); if(this.value >= 7) document.getElementById('gramsizeWarn').innerText = 'Large values with big texts can slow down your computer! But feel free to try ;)';"
-          onkeyup="if(this.value > 30) this.value = 30; "
+          onkeyup="if(this.value > 30) this.value = 30;"
         />
         <output id="gramsizeWarn"></output>
       </div>
@@ -157,8 +158,8 @@
           specific transitions between
           <span class="ngrams-grams-text-minus-one"></span>s.
         </p>
+        <h5>Example:</h5>
         <p>
-          Example: <br />
           The 4-gram '<span class="four-gram-example"></span>' can be seen as a
           transition from the 3-gram '<span
             class="three-gram-example-one"
@@ -224,8 +225,8 @@
           min="1"
           max="1000"
           value="20"
-          onchange="window.globalNgrams.stepsLeft = this.value"
-          onkeyup="if(this.value > 1000) this.value = 1000;"
+          onchange="updateStepsLeft(this.value)"
+          onkeyup=""
         /> <p>characters</p>
       </div>
       
@@ -233,7 +234,7 @@
         <!-- Speed-Control -->
         <label for="speed">Speed:</label>
         <input type="range" class="smallish" id="speed" name="speed" value="10" min="0" max="10" 
-        oninput="speedOutput.value = this.value; updateSpeed(this.value)" autocomplete="off">
+        oninput="updateSpeed(this.value)" autocomplete="off">
         <output id="speedOutput">10</output>
       </div>
 
@@ -260,7 +261,7 @@
       <!-- CLEAR -->
       <div class="text-gen-ctrl">
         <button onclick="clearGeneratedText()" class="smallish">Clear</button>
-        <button onclick="stopGeneratingText()" class="smallish">Stop</button>
+        <button onclick="stopGeneratingText()" class="smallish">Stop generating</button>
       </div>
 
       </section>
