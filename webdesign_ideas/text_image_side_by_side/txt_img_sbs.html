@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Text and image side by side</title>
+    <style>
+      .container {
+        display: flex;
+         /* align-items: center; */
+        justify-content: center;
+        height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        background-color: aqua;
+      }
+      .text-content {
+        width: 50%;
+        text-align: left;
+        background-color: darkkhaki;
+      }
+      .image-content {
+        width: 50%;
+        text-align: right;
+        background-color: darkslategray;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <p>This page shows an example of how to put a text and an image side by side.</p>
+    
+    <div class="container">
+      <div class="text-content">
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum non minus
+          nisi ipsum minima debitis quasi alias placeat distinctio itaque
+          quaerat optio qui dolor, rerum praesentium architecto perspiciatis
+          temporibus corporis.
+          <br />
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ratione,
+          aspernatur voluptatem hic, incidunt commodi non possimus quasi laborum
+          veritatis repellat iure corporis exercitationem iste doloribus quae
+          dolor cum quos ad.
+          <br />
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque unde
+          qui numquam veniam, optio, neque voluptate ad cum aliquam odio
+          similique nesciunt perspiciatis a nemo. Ipsam blanditiis aut modi vel.
+        </p>
+      </div>
+      <div class="image-content">
+        <img src="frog.jpg" alt="frog symptoms" />
+      </div>
+    </div>
+  </body>
+</html>
