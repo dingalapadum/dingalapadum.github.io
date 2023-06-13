@@ -2,6 +2,17 @@
   --transition-table-elements-margin: 0.1em;
 }
 
+[data-theme="light"],
+:root:not([data-theme="dark"]) {
+  --secondary: #8c978e;
+  --color: #3f3f3f;
+  --background-color: #c6d6d7;
+}
+
+:root:not([data-theme="light"]) {
+  --secondary: #919191;
+  --color: #e0e0e0;
+}
 
 .gram-ctrl {
   display: flex;
