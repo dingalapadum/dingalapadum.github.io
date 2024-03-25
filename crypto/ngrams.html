@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <![endif]-->
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="N-Grams and Markov-Chains" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css"
+    />
+    <link rel="stylesheet" href="css/ngrams.css" />
+    <title>N-Grams</title>
+    <script>
+      /*to prevent Firefox FOUC, this must be here*/
+      let FF_FOUC_FIX;
+    </script>
+  </head>
+  <body>
+    <!--[if lt IE 7]
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="#">upgrade your browser</a> to improve your experience.
+      </p>
+    <![endif]-->
+
+    <!-- LIGHTSWITCH -->
+    <img
+      src="resources/light.png"
+      onclick="switchLights()"
+      id="themeswitcher"
+      alt="themeswitcher"
+    />
+
+    <!-- MAIN -->
+    <main class="container">
+      <h1>Frequency counter for N-Grams</h1>
+
+        <!-- Try it yourself! -->
+        <p>
+          Choose a gram-size and enter some text
+        </p>
+        <div class="gram-ctrl">
+        <input
+          type="number"
+          name="n-select"
+          id="n-select"
+          class="number-select"
+          min="2"
+          max="30"
+          value="2"
+          onchange="ngrams(); if(this.value >= 7) document.getElementById('gramsizeWarn').innerText = 'Large values with big texts can slow down your computer! But feel free to try ;)';"
+          onkeyup="if(this.value > 30) this.value = 30;"
+        />
+        <output id="gramsizeWarn"></output>
+      </div>
+        <!--
+        <select name="ngrams-type" id="ngrams-type" onchange="ngrams()">
+          <option value="character">Characters</option>
+          <option value="word">Words</option>
+        </select>
+-->
+        <p>
+          In the table on the right hand side shows how many times each
+          <span class="ngrams-grams-text"></span> appears in the text.
+        </p>
+        <div class="two-columns div-container">
+          <!-- Column 1: input area-->
+          <textarea
+            id="ngrams-input"
+            oninput="ngrams()"
+            placeholder="Type something... Or just copy a larger textbody from the internet"
+          ></textarea>
+
+          <!-- Column 2: output area-->
+          <div id="ngrams-output">
+            <table id="ngrams-output__head">
+              <thead>
+                <tr>
+                  <th
+                    id="ngrams-grams"
+                    class="ngram-table-headers"
+                    onclick="populateTableSortedBy('ngram')"
+                  >
+                    <span class="ngrams-grams-text"></span>
+                    <span id="ngram-dir" class="dir"></span>
+                  </th>
+                  <th
+                    id="ngrams-count"
+                    class="ngram-table-headers"
+                    onclick="populateTableSortedBy('count')"
+                  >
+                    <span>count</span>
+                    <span id="count-dir" class="dir">↑</span>
+                  </th>
+                </tr>
+              </thead>
+            </table>
+            <div class="scrollable-container">
+              <table id="ngrams-output__bodytable">
+                <tbody id="ngrams-output__bodytable__body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- END: two-columns -->
+        
+      </section>
+    </main>
+
+    <script src="./ngrams.js" defer></script>
+    <script src="./theme-switcher.js" defer></script>
+  </body>
+</html>
