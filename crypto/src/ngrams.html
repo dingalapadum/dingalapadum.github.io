@@ -38,7 +38,7 @@
 
     <!-- MAIN -->
     <main class="container">
-      <h1>Frequency counter for N-Grams</h1>
+      <h1>Frequency count for N-Grams</h1>
 
         <!-- Try it yourself! -->
         <p>
@@ -50,20 +50,15 @@
           name="n-select"
           id="n-select"
           class="number-select"
-          min="2"
+          min="1"
           max="30"
           value="2"
-          onchange="ngrams(); if(this.value >= 7) document.getElementById('gramsizeWarn').innerText = 'Large values with big texts can slow down your computer! But feel free to try ;)';"
+          onchange="ngrams(); if(this.value == 1) document.getElementById('gramsizeWarn').innerText = 'Note that a 1-Gram is the same as a regular frequency count for symbols.';"
           onkeyup="if(this.value > 30) this.value = 30;"
         />
         <output id="gramsizeWarn"></output>
       </div>
-        <!--
-        <select name="ngrams-type" id="ngrams-type" onchange="ngrams()">
-          <option value="character">Characters</option>
-          <option value="word">Words</option>
-        </select>
--->
+        
         <p>
           In the table on the right hand side shows how many times each
           <span class="ngrams-grams-text"></span> appears in the text.
