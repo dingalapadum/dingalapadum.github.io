@@ -66,19 +66,23 @@
             }
 
             .freq-table {
-                display: inline-block;
+                display: block;
                 margin: 0.5rem 0;
                 font-family: "Courier New", monospace;
                 background: #0f172a;
                 padding: 0.8rem 1.2rem;
                 border-radius: 8px;
                 border: 1px solid #334155;
+                margin-left: auto;
+                width: 30%;
+                margin-right: auto;
             }
 
             .freq-row {
                 display: flex;
                 gap: 1rem;
                 align-items: center;
+                justify-content: center;
             }
 
             .freq-row .symbol {
@@ -577,6 +581,21 @@
             let inputs = {};
             let hasCelebrated = false;
             let levelSolved = false;
+            let currentWord = "";
+
+            // ── Generate word from symbol frequencies ──
+            function generateWord(syms) {
+                const letters = [];
+                syms.forEach((s) => {
+                    for (let i = 0; i < s.freq; i++) letters.push(s.letter);
+                });
+                // Fisher-Yates shuffle
+                for (let i = letters.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [letters[i], letters[j]] = [letters[j], letters[i]];
+                }
+                return letters.join("");
+            }
 
             // ── Huffman algorithm ──
             function buildHuffmanTree(syms) {
@@ -631,7 +650,9 @@
                 box.innerHTML = `
         <p>Quellalphabet: <strong>{${letters}}</strong>. (${symbols.length} Symbole)</p>
         <p>Codealphabet: <strong>{0, 1}</strong>.</p>
-        <p>Nehmen wir zudem an, wir wüssten, dass wir ein Wort verschicken wollen, in dem die Symbole mit folgenden Häufigkeiten auftreten:</p>
+        <p>Man will das folgende Wort kodieren: </p>
+        <p><span style="font-family:'Courier New',monospace; color:#fbbf24; word-break:break-all;">${currentWord}</span></p>
+        <p>Die Häufigkeiten der Buchstaben darin sind:</p>
         <div class="freq-table">${freqRows}</div>
         <p style="margin-top: 1rem;">Erstelle einen Code, der insgesamt so wenig Bits wie möglich benötigt und zudem <strong>präfixfrei</strong> ist (damit die Eindeutigkeit gewährleistet ist).</p>
     `;
@@ -844,6 +865,7 @@
                 optimalBits = computeOptimalBits(symbols);
                 hasCelebrated = false;
                 levelSolved = false;
+                currentWord = generateWord(symbols);
 
                 renderLevelIndicator();
                 renderTaskBox();
