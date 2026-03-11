@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimale Kodierung</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 720px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .level-indicator {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 1.5rem;
+        }
+
+        .level-indicator strong {
+            color: #a78bfa;
+        }
+
+        .task-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .task-box p { margin-bottom: 0.8rem; }
+
+        .freq-table {
+            display: inline-block;
+            margin: 0.5rem 0;
+            font-family: 'Courier New', monospace;
+            background: #0f172a;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .freq-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .freq-row .symbol {
+            color: #60a5fa;
+            font-weight: 700;
+            width: 1.5rem;
+        }
+
+        .freq-row .freq {
+            color: #fbbf24;
+            width: 2rem;
+            text-align: right;
+        }
+
+        .encoding-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .encoding-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .encoding-row:focus-within {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+        }
+
+        .encoding-label {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #60a5fa;
+            width: 1.8rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .encoding-freq {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            width: 2rem;
+            flex-shrink: 0;
+        }
+
+        .encoding-input {
+            flex: 1;
+            min-width: 0;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .encoding-input:focus {
+            border-color: #60a5fa;
+        }
+
+        .encoding-bits {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            width: 3.5rem;
+            text-align: right;
+            flex-shrink: 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            transition: all 0.4s;
+        }
+
+        .stat-card.total-bits .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #60a5fa;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-card.prefix-status .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+        }
+
+        /* Prefix-free warnings */
+        .prefix-ok .stat-value { color: #34d399; }
+        .prefix-bad {
+            animation: pulse-red 1.5s ease-in-out infinite;
+        }
+        .prefix-bad .stat-value { color: #f87171; }
+
+        @keyframes pulse-red {
+            0%, 100% { background: #1e293b; border-color: #334155; }
+            50% { background: #2d1219; border-color: #7f1d1d; box-shadow: 0 0 20px rgba(248, 113, 113, 0.15); }
+        }
+
+        .prefix-conflict-info {
+            font-size: 0.75rem;
+            color: #f87171;
+            margin-top: 0.4rem;
+            min-height: 1.2rem;
+        }
+
+        .optimality-hint {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #fbbf24;
+            margin-bottom: 1rem;
+            min-height: 1.2rem;
+            font-style: italic;
+        }
+
+        .next-level-btn {
+            display: none;
+            margin: 1rem auto;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            border: none;
+            color: white;
+            padding: 0.7rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .next-level-btn:hover { transform: scale(1.05); }
+
+        .next-level-btn.show {
+            display: block;
+        }
+
+        /* Congratulations overlay */
+        .congrats-overlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+        }
+
+        .congrats-overlay.show {
+            display: flex;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .congrats-box {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 2px solid #a78bfa;
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 60px rgba(167, 139, 250, 0.3);
+        }
+
+        .congrats-box h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #34d399, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .congrats-box p {
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .congrats-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .congrats-box button {
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            border: none;
+            color: white;
+            padding: 0.7rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .congrats-box button:hover { transform: scale(1.05); }
+
+        .congrats-box button.secondary {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #94a3b8;
+        }
+
+        .congrats-box button.secondary:hover {
+            border-color: #60a5fa;
+            color: #e2e8f0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Confetti canvas */
+        #confetti-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1001;
+        }
+
+        .hint {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Help input */
+        .help-section {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .help-input {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            outline: none;
+            width: 200px;
+            text-align: center;
+            transition: border-color 0.2s;
+        }
+
+        .help-input:focus {
+            border-color: #60a5fa;
+        }
+
+        .help-input::placeholder {
+            color: #475569;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-style: italic;
+        }
+
+        /* Solution section */
+        .solution-section {
+            display: none;
+            margin-top: 1.5rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .solution-section.show {
+            display: block;
+        }
+
+        .solution-section h3 {
+            color: #a78bfa;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .solution-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .solution-table th {
+            text-align: left;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.4rem 0.8rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .solution-table td {
+            padding: 0.4rem 0.8rem;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .solution-table .sol-letter { color: #60a5fa; font-weight: 700; }
+        .solution-table .sol-code { color: #34d399; letter-spacing: 2px; }
+        .solution-table .sol-bits { color: #fbbf24; text-align: right; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Optimale Kodierung</h1>
+    <div class="level-indicator" id="level-indicator"></div>
+
+    <div class="task-box" id="task-box"></div>
+
+    <div class="encoding-grid" id="encoding-grid"></div>
+
+    <div class="stats-panel">
+        <div class="stat-card total-bits">
+            <div class="stat-label">Gesamtanzahl Bits</div>
+            <div class="stat-value" id="total-bits">0</div>
+        </div>
+        <div class="stat-card prefix-status" id="prefix-card">
+            <div class="stat-label">Präfixfreiheit</div>
+            <div class="stat-value" id="prefix-status">—</div>
+            <div class="prefix-conflict-info" id="prefix-conflict"></div>
+        </div>
+    </div>
+
+    <div class="optimality-hint" id="optimality-hint"></div>
+
+    <button class="next-level-btn" id="next-level-btn" onclick="nextLevel()">Nächste Aufgabe</button>
+
+    <div class="help-section">
+        <input class="help-input" id="help-input" type="text" maxlength="10" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div class="solution-section" id="solution-section">
+        <h3>Mögliche Lösung (Huffman)</h3>
+        <table class="solution-table" id="solution-table"></table>
+    </div>
+</div>
+
+<div class="congrats-overlay" id="congrats-overlay">
+    <div class="congrats-box">
+        <h2 id="congrats-title">Hervorragend!</h2>
+        <p id="congrats-text"></p>
+        <div class="congrats-buttons" id="congrats-buttons"></div>
+    </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+// ── Task definitions (edit these to change the exercises) ──
+const tasks = [
+    {
+        symbols: [
+            { letter: 'A', freq: 40 },
+            { letter: 'B', freq: 27 },
+            { letter: 'C', freq: 25 },
+            { letter: 'D', freq: 10 },
+        ]
+    },
+    {
+        symbols: [
+            { letter: 'A', freq: 40 },
+            { letter: 'B', freq: 27 },
+            { letter: 'C', freq: 25 },
+            { letter: 'D', freq: 15 },
+            { letter: 'E', freq: 6 },
+            { letter: 'F', freq: 5 },
+            { letter: 'G', freq: 2 },
+            { letter: 'H', freq: 2 },
+        ]
+    },
+];
+
+let currentLevel = 0;
+let symbols = [];
+let optimalBits = 0;
+let inputs = {};
+let hasCelebrated = false;
+let levelSolved = false;
+
+// ── Huffman algorithm ──
+function buildHuffmanTree(syms) {
+    let nodes = syms.map(s => ({ freq: s.freq, letter: s.letter }));
+    while (nodes.length > 1) {
+        nodes.sort((a, b) => a.freq - b.freq);
+        const left = nodes.shift();
+        const right = nodes.shift();
+        nodes.push({ freq: left.freq + right.freq, left, right });
+    }
+    return nodes[0];
+}
+
+function getHuffmanCodes(root) {
+    const codes = {};
+    function walk(node, prefix) {
+        if (node.letter !== undefined) {
+            codes[node.letter] = prefix || '0';
+            return;
+        }
+        if (node.left) walk(node.left, prefix + '0');
+        if (node.right) walk(node.right, prefix + '1');
+    }
+    walk(root, '');
+    return codes;
+}
+
+function computeOptimalBits(syms) {
+    const tree = buildHuffmanTree(syms);
+    const codes = getHuffmanCodes(tree);
+    let total = 0;
+    syms.forEach(s => { total += codes[s.letter].length * s.freq; });
+    return total;
+}
+
+// ── Render task box dynamically ──
+function renderTaskBox() {
+    const box = document.getElementById('task-box');
+    const letters = symbols.map(s => s.letter).join(', ');
+    const freqRows = symbols.map(s =>
+        `<div class="freq-row"><span class="symbol">${s.letter}:</span><span class="freq">${s.freq}</span></div>`
+    ).join('');
+
+    box.innerHTML = `
+        <p>Nehmen wir an, unser Quellalphabet besteht aus ${symbols.length} Symbolen: <strong>{${letters}}</strong>.</p>
+        <p>Unser Codealphabet besteht aus zwei Symbolen: <strong>{0, 1}</strong>.</p>
+        <p>Nehmen wir zudem an, wir wüssten, dass wir ein Wort verschicken wollen, in dem die Symbole mit folgenden Häufigkeiten auftreten:</p>
+        <div class="freq-table">${freqRows}</div>
+        <p style="margin-top: 1rem;">Erstelle einen Code, der insgesamt so wenig Bits wie möglich benötigt und zudem <strong>präfixfrei</strong> ist (damit die Eindeutigkeit gewährleistet ist).</p>
+    `;
+}
+
+// ── Render encoding grid ──
+function renderGrid() {
+    const grid = document.getElementById('encoding-grid');
+    grid.innerHTML = '';
+    inputs = {};
+
+    symbols.forEach(s => {
+        const row = document.createElement('div');
+        row.className = 'encoding-row';
+        row.innerHTML = `
+            <span class="encoding-label">${s.letter}</span>
+            <span class="encoding-freq">×${s.freq}</span>
+            <input class="encoding-input" type="text" data-letter="${s.letter}" placeholder="z.B. 010" autocomplete="off" spellcheck="false">
+            <span class="encoding-bits" id="bits-${s.letter}">—</span>
+        `;
+        grid.appendChild(row);
+        const input = row.querySelector('input');
+        inputs[s.letter] = input;
+
+        input.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^01]/g, '');
+            update();
+        });
+    });
+}
+
+// ── Render solution ──
+function renderSolution() {
+    const table = document.getElementById('solution-table');
+    const tree = buildHuffmanTree(symbols);
+    const codes = getHuffmanCodes(tree);
+    let totalBits = 0;
+
+    let html = `<tr><th>Symbol</th><th>Code</th><th style="text-align:right">Bits</th></tr>`;
+    symbols.forEach(s => {
+        const code = codes[s.letter];
+        const bits = code.length * s.freq;
+        totalBits += bits;
+        html += `<tr>
+            <td class="sol-letter">${s.letter} (×${s.freq})</td>
+            <td class="sol-code">${code}</td>
+            <td class="sol-bits">${bits}</td>
+        </tr>`;
+    });
+    html += `<tr><td colspan="2" style="color:#94a3b8; padding-top:0.6rem; border-top:1px solid #334155;"><strong>Gesamt</strong></td><td class="sol-bits" style="padding-top:0.6rem; border-top:1px solid #334155;"><strong>${totalBits}</strong></td></tr>`;
+    table.innerHTML = html;
+}
+
+// ── Level indicator ──
+function renderLevelIndicator() {
+    document.getElementById('level-indicator').innerHTML =
+        `Aufgabe <strong>${currentLevel + 1}</strong> von <strong>${tasks.length}</strong>`;
+}
+
+// ── Prefix check ──
+function isPrefixFree(codes) {
+    const entries = Object.entries(codes).filter(([, v]) => v.length > 0);
+    const conflicts = [];
+    for (let i = 0; i < entries.length; i++) {
+        for (let j = i + 1; j < entries.length; j++) {
+            const [la, ca] = entries[i];
+            const [lb, cb] = entries[j];
+            if (ca.startsWith(cb) || cb.startsWith(ca)) {
+                conflicts.push([la, lb]);
+            }
+        }
+    }
+    return { free: conflicts.length === 0, conflicts };
+}
+
+// ── Update loop ──
+function update() {
+    const codes = {};
+    let totalBits = 0;
+    let allFilled = true;
+
+    symbols.forEach(s => {
+        const val = inputs[s.letter].value;
+        codes[s.letter] = val;
+        const bitsEl = document.getElementById(`bits-${s.letter}`);
+        if (val.length > 0) {
+            const bits = val.length * s.freq;
+            totalBits += bits;
+            bitsEl.textContent = `${bits} Bits`;
+        } else {
+            bitsEl.textContent = '—';
+            allFilled = false;
+        }
+    });
+
+    document.getElementById('total-bits').textContent = totalBits || '0';
+
+    const prefixCard = document.getElementById('prefix-card');
+    const prefixStatus = document.getElementById('prefix-status');
+    const prefixConflict = document.getElementById('prefix-conflict');
+
+    const filledCodes = Object.entries(codes).filter(([, v]) => v.length > 0);
+
+    if (filledCodes.length < 2) {
+        prefixCard.className = 'stat-card prefix-status';
+        prefixStatus.textContent = '—';
+        prefixConflict.textContent = '';
+        return;
+    }
+
+    const result = isPrefixFree(codes);
+
+    const optHint = document.getElementById('optimality-hint');
+
+    if (result.free) {
+        prefixCard.className = 'stat-card prefix-status prefix-ok';
+        prefixStatus.textContent = 'Präfixfrei ✓';
+        prefixConflict.textContent = '';
+
+        // Show optimality feedback
+        if (allFilled && totalBits > optimalBits) {
+            optHint.textContent = 'Die Kodierung ist zwar präfixfrei, aber es gibt eine optimalere Kodierung. Probier es weiter!';
+        } else {
+            optHint.textContent = '';
+        }
+    } else {
+        prefixCard.className = 'stat-card prefix-status prefix-bad';
+        prefixStatus.textContent = 'Nicht präfixfrei ✗';
+        const first = result.conflicts.slice(0, 3).map(([a, b]) => `${a}↔${b}`).join(', ');
+        prefixConflict.textContent = `Konflikte: ${first}${result.conflicts.length > 3 ? ' …' : ''}`;
+        optHint.textContent = '';
+    }
+
+    // Check for optimal solution
+    if (allFilled && result.free && totalBits === optimalBits && !hasCelebrated) {
+        hasCelebrated = true;
+        levelSolved = true;
+        showCongrats(totalBits);
+    }
+}
+
+// ── Congrats ──
+function showCongrats(bits) {
+    const isLast = currentLevel >= tasks.length - 1;
+    document.getElementById('congrats-title').textContent =
+        isLast ? 'Hervorragend!' : 'Sehr gut!';
+    document.getElementById('congrats-text').innerHTML =
+        isLast
+            ? `Du hast die optimale präfixfreie Codierung gefunden!<br>Dein Code benötigt nur <strong>${bits} Bits</strong> — das absolute Minimum.`
+            : `Aufgabe ${currentLevel + 1} gelöst!<br>Dein Code benötigt nur <strong>${bits} Bits</strong> — das absolute Minimum.`;
+
+    const btns = document.getElementById('congrats-buttons');
+    if (isLast) {
+        btns.innerHTML = `<button onclick="closeOverlay()">Weiter experimentieren</button>`;
+    } else {
+        btns.innerHTML = `
+            <button onclick="nextLevel()">Nächste Aufgabe</button>
+            <button class="secondary" onclick="stayOnLevel()">Weiter experimentieren</button>
+        `;
+    }
+
+    setTimeout(() => {
+        document.getElementById('congrats-overlay').classList.add('show');
+        launchConfetti();
+    }, 300);
+}
+
+function closeOverlay() {
+    document.getElementById('congrats-overlay').classList.remove('show');
+}
+
+function stayOnLevel() {
+    closeOverlay();
+    // Show persistent next-level button if not on last level
+    if (currentLevel < tasks.length - 1) {
+        document.getElementById('next-level-btn').classList.add('show');
+    }
+}
+
+function nextLevel() {
+    closeOverlay();
+    currentLevel++;
+    loadLevel();
+}
+
+// ── Load a level ──
+function loadLevel() {
+    symbols = tasks[currentLevel].symbols;
+    optimalBits = computeOptimalBits(symbols);
+    hasCelebrated = false;
+    levelSolved = false;
+
+    renderLevelIndicator();
+    renderTaskBox();
+    renderGrid();
+    renderSolution();
+
+    // Hide solution when switching levels
+    document.getElementById('solution-section').classList.remove('show');
+    document.getElementById('help-input').value = '';
+
+    // Reset stats and UI
+    document.getElementById('total-bits').textContent = '0';
+    document.getElementById('prefix-card').className = 'stat-card prefix-status';
+    document.getElementById('prefix-status').textContent = '—';
+    document.getElementById('prefix-conflict').textContent = '';
+    document.getElementById('optimality-hint').textContent = '';
+    document.getElementById('next-level-btn').classList.remove('show');
+}
+
+// ── Help input ──
+document.getElementById('help-input').addEventListener('input', (e) => {
+    const val = e.target.value.trim().toLowerCase();
+    if (val === 'help') {
+        document.getElementById('solution-section').classList.add('show');
+    } else {
+        document.getElementById('solution-section').classList.remove('show');
+    }
+});
+
+// ── Confetti ──
+function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = ['#60a5fa', '#a78bfa', '#34d399', '#fbbf24', '#f87171', '#fb923c', '#e879f9'];
+    const pieces = [];
+
+    for (let i = 0; i < 200; i++) {
+        pieces.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            w: Math.random() * 10 + 5,
+            h: Math.random() * 6 + 3,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vx: (Math.random() - 0.5) * 4,
+            vy: Math.random() * 3 + 2,
+            rot: Math.random() * Math.PI * 2,
+            rv: (Math.random() - 0.5) * 0.2,
+            opacity: 1,
+        });
+    }
+
+    let frame = 0;
+    const maxFrames = 300;
+
+    function animate() {
+        if (frame > maxFrames) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            return;
+        }
+        frame++;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        pieces.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.05;
+            p.rot += p.rv;
+            if (frame > maxFrames - 60) {
+                p.opacity = Math.max(0, p.opacity - 0.02);
+            }
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.globalAlpha = p.opacity;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+}
+
+window.addEventListener('resize', () => {
+    const canvas = document.getElementById('confetti-canvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+// ── Start ──
+loadLevel();
+</script>
+
+</body>
+</html>
