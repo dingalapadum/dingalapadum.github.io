@@ -480,8 +480,32 @@ const tasks = [
             { letter: 'F', freq: 5 },
             { letter: 'G', freq: 2 },
             { letter: 'H', freq: 2 },
+        ],
+    },
+    {
+        symbols: [
+            { letter: 'A', freq: 80 },
+            { letter: 'B', freq: 27 },
+            { letter: 'C', freq: 25 },
+            { letter: 'D', freq: 15 },
+            { letter: 'E', freq: 6 },
+            { letter: 'F', freq: 5 },
+            { letter: 'G', freq: 1 },
+            { letter: 'H', freq: 2 },
         ]
     },
+    {
+        symbols: [
+            { letter: 'A', freq: 35 },
+            { letter: 'B', freq: 29 },
+            { letter: 'C', freq: 20 },
+            { letter: 'D', freq: 10 },
+            { letter: 'E', freq: 3 },
+            { letter: 'F', freq: 2 },
+            { letter: 'G', freq: 1 },
+            { letter: 'H', freq: 1 },
+        ]
+    }
 ];
 
 let currentLevel = 0;
@@ -747,10 +771,33 @@ function loadLevel() {
     document.getElementById('next-level-btn').classList.remove('show');
 }
 
+function encrypt(text, key) {
+  const normalizedKey = key.toLowerCase().replace(/[^a-z]/g, "");
+  if (!normalizedKey) throw new Error("Key must contain at least one letter");
+
+  let keyIndex = 0;
+  return text
+    .split("")
+    .map(char => {
+      const code = char.charCodeAt(0);
+      const isUpper = code >= 65 && code <= 90;
+      const isLower = code >= 97 && code <= 122;
+
+      if (!isUpper && !isLower) return char; // leave non-letters unchanged
+
+      const base = isUpper ? 65 : 97;
+      const shift = normalizedKey.charCodeAt(keyIndex % normalizedKey.length) - 97;
+      keyIndex++;
+
+      return String.fromCharCode((code - base + shift) % 26 + base);
+    })
+    .join("");
+}
+
 // ── Help input ──
 document.getElementById('help-input').addEventListener('input', (e) => {
-    const val = e.target.value.trim().toLowerCase();
-    if (val === 'help') {
+    const val = encrypt(e.target.value.trim().toLowerCase(), 'asdf');
+    if (val === 'hwou') {
         document.getElementById('solution-section').classList.add('show');
     } else {
         document.getElementById('solution-section').classList.remove('show');
