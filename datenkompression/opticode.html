@@ -168,7 +168,7 @@
 
             .stats-panel {
                 display: grid;
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: repeat(3, 1fr);
                 gap: 1rem;
                 margin-bottom: 1.5rem;
             }
@@ -194,12 +194,24 @@
                 font-weight: 700;
             }
 
+            .stat-card.optimality-card .stat-value {
+                font-size: 1.05rem;
+                font-weight: 700;
+            }
+
             .stat-label {
                 font-size: 0.8rem;
                 color: #94a3b8;
                 text-transform: uppercase;
                 letter-spacing: 1px;
                 margin-bottom: 0.4rem;
+            }
+
+            .stat-optimal-hint {
+                font-size: 0.72rem;
+                color: #475569;
+                margin-top: 0.3rem;
+                font-family: "Courier New", monospace;
             }
 
             /* Prefix-free warnings */
@@ -233,31 +245,87 @@
                 min-height: 1.2rem;
             }
 
-            .optimality-hint {
-                text-align: center;
-                font-size: 0.85rem;
-                color: #fbbf24;
-                margin-bottom: 1rem;
+            /* Optimality card states */
+            .optimality-ok .stat-value {
+                color: #34d399;
+            }
+            .optimality-ok {
+                border-color: rgba(52, 211, 153, 0.3);
+            }
+            .optimality-bad .stat-value {
+                color: #f87171;
+            }
+            .optimality-incomplete .stat-value {
+                color: #475569;
+            }
+
+            .optimality-issues {
+                font-size: 0.72rem;
+                color: #f87171;
+                margin-top: 0.4rem;
                 min-height: 1.2rem;
-                font-style: italic;
+                line-height: 1.4;
+            }
+
+            /* Global button press effect */
+            button:active {
+                transform: scale(0.94) !important;
+                filter: brightness(0.82);
+                transition: transform 0.06s, filter 0.06s !important;
+            }
+
+            /* Save solution button */
+            .save-solution-btn {
+                display: none;
+                width: 100%;
+                background: transparent;
+                border: 1px solid #34d399;
+                color: #34d399;
+                padding: 0.6rem 1.5rem;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                cursor: pointer;
+                font-weight: 600;
+                margin-bottom: 0.75rem;
+                transition: background 0.2s, transform 0.06s, filter 0.06s;
+            }
+
+            .save-solution-btn:hover {
+                background: rgba(52, 211, 153, 0.1);
+            }
+
+            .save-solution-btn.show {
+                display: block;
+            }
+
+            /* Pulsing invite animation */
+            @keyframes pulse-invite {
+                0%, 100% {
+                    box-shadow: 0 4px 18px rgba(96, 165, 250, 0.35);
+                    transform: scale(1);
+                }
+                50% {
+                    box-shadow: 0 6px 30px rgba(167, 139, 250, 0.65);
+                    transform: scale(1.035);
+                }
             }
 
             .next-level-btn {
                 display: none;
-                margin: 1rem auto;
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
                 background: linear-gradient(135deg, #60a5fa, #a78bfa);
                 border: none;
                 color: white;
-                padding: 0.7rem 2rem;
-                border-radius: 8px;
-                font-size: 1rem;
+                padding: 0.85rem 2.2rem;
+                border-radius: 10px;
+                font-size: 1.1rem;
                 cursor: pointer;
-                font-weight: 600;
-                transition: transform 0.2s;
-            }
-
-            .next-level-btn:hover {
-                transform: scale(1.05);
+                font-weight: 700;
+                z-index: 200;
+                animation: pulse-invite 2.2s ease-in-out infinite;
+                transition: filter 0.06s;
             }
 
             .next-level-btn.show {
@@ -323,17 +391,18 @@
                 font-size: 1rem;
                 cursor: pointer;
                 font-weight: 600;
-                transition: transform 0.2s;
+                transition: filter 0.06s;
             }
 
-            .congrats-box button:hover {
-                transform: scale(1.05);
+            .congrats-box button.primary-pulse {
+                animation: pulse-invite 2.2s ease-in-out infinite;
             }
 
             .congrats-box button.secondary {
                 background: transparent;
                 border: 1px solid #475569;
                 color: #94a3b8;
+                animation: none;
             }
 
             .congrats-box button.secondary:hover {
@@ -377,23 +446,25 @@
                 font-style: italic;
             }
 
-            /* Help input */
-            .help-section {
-                position: fixed;
-                bottom: 20px; /* Adjust as needed */
-                left: 20px; /* Adjust as needed */
+            /* Help input (now lives inside nav panel) */
+            .nav-help-row {
+                margin-top: 1rem;
+                padding-top: 0.75rem;
+                border-top: 1px solid #334155;
+                display: flex;
+                justify-content: center;
             }
 
             .help-input {
-                background: #1e293b;
+                background: #0f172a;
                 border: 1px solid #334155;
                 border-radius: 8px;
-                padding: 0.5rem 1rem;
+                padding: 0.4rem 0.9rem;
                 color: #e2e8f0;
                 font-family: "Courier New", monospace;
-                font-size: 0.9rem;
+                font-size: 0.85rem;
                 outline: none;
-                width: 200px;
+                width: 180px;
                 text-align: center;
                 transition: border-color 0.2s;
             }
@@ -406,9 +477,10 @@
                 color: #475569;
                 font-family: "Segoe UI", system-ui, sans-serif;
                 font-style: italic;
+                font-size: 0.8rem;
             }
 
-            /* Solution section */
+            /* Solution sections */
             .solution-section {
                 display: none;
                 margin-top: 1.5rem;
@@ -463,12 +535,173 @@
                 color: #fbbf24;
                 text-align: right;
             }
+
+            /* Level bar (indicator + toggle button) */
+            .level-bar {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.75rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .level-bar .level-indicator {
+                margin-bottom: 0;
+            }
+
+            .nav-toggle-btn {
+                background: transparent;
+                border: 1px solid #334155;
+                color: #94a3b8;
+                font-size: 0.8rem;
+                padding: 0.25rem 0.65rem;
+                border-radius: 6px;
+                cursor: pointer;
+                transition:
+                    border-color 0.2s,
+                    color 0.2s;
+                white-space: nowrap;
+            }
+
+            .nav-toggle-btn:hover {
+                border-color: #60a5fa;
+                color: #60a5fa;
+            }
+
+            /* Nav overlay */
+            .nav-overlay {
+                position: fixed;
+                inset: 0;
+                display: none;
+                justify-content: center;
+                align-items: flex-start;
+                padding-top: 6rem;
+                z-index: 800;
+                background: rgba(15, 23, 42, 0.7);
+                backdrop-filter: blur(3px);
+            }
+
+            .nav-overlay.show {
+                display: flex;
+                animation: fadeIn 0.2s ease;
+            }
+
+            /* Blur + disable the page content when nav is open */
+            body.nav-open .container {
+                filter: blur(4px);
+                pointer-events: none;
+                user-select: none;
+            }
+
+            .nav-panel {
+                background: #1e293b;
+                border: 1px solid #475569;
+                border-radius: 16px;
+                padding: 1.25rem 1.5rem;
+                width: 100%;
+                max-width: 420px;
+                max-height: 70vh;
+                overflow-y: auto;
+                animation: scaleIn 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+            }
+
+            .nav-panel-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 1rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 1px solid #334155;
+                color: #94a3b8;
+                font-size: 0.85rem;
+            }
+
+            .level-nav-list {
+                display: flex;
+                flex-direction: column;
+                gap: 0.3rem;
+                margin-top: 0.75rem;
+            }
+
+            .level-nav-item {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.45rem 0.75rem;
+                border-radius: 8px;
+                font-size: 0.85rem;
+                border: 1px solid transparent;
+                transition: background 0.15s;
+            }
+
+            .level-nav-item.clickable {
+                cursor: pointer;
+            }
+
+            .level-nav-item.solved {
+                color: #34d399;
+            }
+
+            .level-nav-item.solved.clickable:hover {
+                background: rgba(52, 211, 153, 0.08);
+                border-color: rgba(52, 211, 153, 0.2);
+            }
+
+            .level-nav-item.frontier {
+                color: #fbbf24;
+            }
+
+            .level-nav-item.frontier.clickable:hover {
+                background: rgba(251, 191, 36, 0.08);
+                border-color: rgba(251, 191, 36, 0.2);
+            }
+
+            .level-nav-item.unreachable {
+                color: #475569;
+            }
+
+            .level-nav-item.active {
+                border-color: rgba(255, 255, 255, 0.15);
+                background: rgba(255, 255, 255, 0.04);
+                font-weight: 600;
+            }
+
+            .level-nav-icon {
+                width: 1rem;
+                text-align: center;
+                flex-shrink: 0;
+                font-size: 0.8rem;
+            }
+
+            .start-over-btn {
+                background: transparent;
+                border: 1px solid #334155;
+                color: #64748b;
+                font-size: 0.75rem;
+                padding: 0.3rem 0.75rem;
+                border-radius: 6px;
+                cursor: pointer;
+                transition:
+                    border-color 0.2s,
+                    color 0.2s;
+                white-space: nowrap;
+            }
+
+            .start-over-btn:hover {
+                border-color: #f87171;
+                color: #f87171;
+            }
         </style>
     </head>
     <body>
         <div class="container">
             <h1>Optimale Kodierung</h1>
-            <div class="level-indicator" id="level-indicator"></div>
+            <div class="level-bar">
+                <div class="level-indicator" id="level-indicator"></div>
+                <button class="nav-toggle-btn" onclick="toggleNav()">
+                    ☰ Übersicht
+                </button>
+            </div>
 
             <div class="task-box" id="task-box"></div>
 
@@ -478,6 +711,7 @@
                 <div class="stat-card total-bits">
                     <div class="stat-label">Gesamtanzahl Bits</div>
                     <div class="stat-value" id="total-bits">0</div>
+                    <div class="stat-optimal-hint" id="optimal-bits-hint"></div>
                 </div>
                 <div class="stat-card prefix-status" id="prefix-card">
                     <div class="stat-label">Präfixfreiheit</div>
@@ -487,32 +721,60 @@
                         id="prefix-conflict"
                     ></div>
                 </div>
+                <div class="stat-card optimality-card optimality-incomplete" id="optimality-card">
+                    <div class="stat-label">Optimalität</div>
+                    <div class="stat-value" id="optimality-status">—</div>
+                    <div class="optimality-issues" id="optimality-issues"></div>
+                </div>
             </div>
 
-            <div class="optimality-hint" id="optimality-hint"></div>
-
             <button
-                class="next-level-btn"
-                id="next-level-btn"
-                onclick="nextLevel()"
+                class="save-solution-btn"
+                id="save-solution-btn"
+                onclick="saveCurrentSolution()"
             >
-                Nächste Aufgabe
+                ▼&ensp;Lösung speichern
             </button>
 
-            <div class="help-section">
-                <input
-                    class="help-input"
-                    id="help-input"
-                    type="text"
-                    maxlength="10"
-                    autocomplete="off"
-                    spellcheck="false"
-                />
+            <div class="solution-section" id="user-solution-section">
+                <h3>Deine Lösung</h3>
+                <table class="solution-table" id="user-solution-table"></table>
             </div>
 
             <div class="solution-section" id="solution-section">
                 <h3>Mögliche Lösung (Huffman)</h3>
                 <table class="solution-table" id="solution-table"></table>
+            </div>
+        </div>
+
+        <button
+            class="next-level-btn"
+            id="next-level-btn"
+            onclick="nextLevel()"
+        >
+            Nächste Aufgabe →
+        </button>
+
+        <div class="nav-overlay" id="nav-overlay" onclick="handleNavOverlayClick(event)">
+            <div class="nav-panel">
+                <div class="nav-panel-header">
+                    <span>Aufgaben-Übersicht</span>
+                    <button class="start-over-btn" onclick="startOver(event)">
+                        Von vorne beginnen
+                    </button>
+                </div>
+                <div class="level-nav-list" id="level-nav-list"></div>
+                <div class="nav-help-row">
+                    <input
+                        class="help-input"
+                        id="help-input"
+                        type="text"
+                        maxlength="10"
+                        autocomplete="off"
+                        spellcheck="false"
+                        placeholder="Geheimcode"
+                    />
+                </div>
             </div>
         </div>
 
@@ -531,10 +793,10 @@
             const tasks = [
                 {
                     symbols: [
-                        { letter: "A", freq: 40 },
-                        { letter: "B", freq: 27 },
-                        { letter: "C", freq: 25 },
-                        { letter: "D", freq: 10 },
+                        { letter: "X", freq: 10 },
+                        { letter: "Y", freq: 5 },
+                        { letter: "C", freq: 2 },
+                        { letter: "D", freq: 2 },
                     ],
                 },
                 {
@@ -582,6 +844,132 @@
             let hasCelebrated = false;
             let levelSolved = false;
             let currentWord = "";
+            let solvedLevels = new Set();
+            let progressData = { solved: [], solutions: {} };
+
+            // ── Progress persistence ──
+            function loadProgress() {
+                try {
+                    progressData = JSON.parse(
+                        localStorage.getItem("opticode_progress") || "{}",
+                    );
+                    progressData.solved = progressData.solved || [];
+                    progressData.solutions = progressData.solutions || {};
+                    solvedLevels = new Set(progressData.solved);
+                } catch (e) {
+                    progressData = { solved: [], solutions: {} };
+                    solvedLevels = new Set();
+                }
+            }
+
+            function saveProgress() {
+                progressData.solved = [...solvedLevels];
+                localStorage.setItem(
+                    "opticode_progress",
+                    JSON.stringify(progressData),
+                );
+            }
+
+            function markSolved(index) {
+                solvedLevels.add(index);
+                const userCodes = {};
+                symbols.forEach((s) => {
+                    userCodes[s.letter] = inputs[s.letter].value;
+                });
+                progressData.solutions[String(index)] = userCodes;
+                saveProgress();
+                renderLevelNav();
+            }
+
+            function computeFrontierLevel() {
+                let f = 0;
+                while (f < tasks.length && solvedLevels.has(f)) f++;
+                return f;
+            }
+
+            // ── Level navigation ──
+            function renderLevelNav() {
+                const list = document.getElementById("level-nav-list");
+                const frontier = computeFrontierLevel();
+                list.innerHTML = "";
+
+                tasks.forEach((task, i) => {
+                    const isSolved = solvedLevels.has(i);
+                    const isFrontier = i === frontier;
+                    const isActive = i === currentLevel;
+                    const isClickable = isSolved || isFrontier;
+
+                    const item = document.createElement("div");
+                    item.className =
+                        "level-nav-item" +
+                        (isSolved
+                            ? " solved"
+                            : isFrontier
+                              ? " frontier"
+                              : " unreachable") +
+                        (isActive ? " active" : "") +
+                        (isClickable ? " clickable" : "");
+
+                    const icon = isSolved ? "✓" : isFrontier ? "→" : "○";
+                    item.innerHTML = `
+                        <span class="level-nav-icon">${icon}</span>
+                        <span>Aufgabe ${i + 1} <span style="font-size:0.75rem; opacity:0.65;">(${task.symbols.length} Symbole)</span></span>
+                    `;
+
+                    if (isClickable) {
+                        item.addEventListener("click", () => jumpToLevel(i));
+                    }
+
+                    list.appendChild(item);
+                });
+            }
+
+            function toggleNav() {
+                const overlay = document.getElementById("nav-overlay");
+                if (overlay.classList.contains("show")) {
+                    closeNav();
+                } else {
+                    renderLevelNav();
+                    overlay.classList.add("show");
+                    document.body.classList.add("nav-open");
+                }
+            }
+
+            function closeNav() {
+                document.getElementById("nav-overlay").classList.remove("show");
+                document.body.classList.remove("nav-open");
+            }
+
+            function handleNavOverlayClick(e) {
+                if (e.target === document.getElementById("nav-overlay")) {
+                    closeNav();
+                }
+            }
+
+            function jumpToLevel(index) {
+                const frontier = computeFrontierLevel();
+                if (!solvedLevels.has(index) && index !== frontier) return;
+                closeNav();
+                currentLevel = index;
+                loadLevel();
+            }
+
+            function startOver(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (
+                    confirm(
+                        "Wirklich von vorne beginnen? Der gesamte Fortschritt geht verloren.",
+                    )
+                ) {
+                    localStorage.removeItem("opticode_progress");
+                    solvedLevels = new Set();
+                    progressData = { solved: [], solutions: {} };
+                    currentLevel = 0;
+                    closeNav();
+                    loadLevel();
+                }
+            }
 
             // ── Generate word from symbol frequencies ──
             function generateWord(syms) {
@@ -706,6 +1094,25 @@
                 table.innerHTML = html;
             }
 
+            // ── Render user's saved solution ──
+            function renderUserSolution(codes) {
+                const table = document.getElementById("user-solution-table");
+                let totalBits = 0;
+                let html = `<tr><th>Symbol</th><th>Dein Code</th><th style="text-align:right">Bits</th></tr>`;
+                symbols.forEach((s) => {
+                    const code = codes[s.letter] || "";
+                    const bits = code.length * s.freq;
+                    totalBits += bits;
+                    html += `<tr>
+                        <td class="sol-letter">${s.letter} (×${s.freq})</td>
+                        <td class="sol-code">${code}</td>
+                        <td class="sol-bits">${bits}</td>
+                    </tr>`;
+                });
+                html += `<tr><td colspan="2" style="color:#94a3b8; padding-top:0.6rem; border-top:1px solid #334155;"><strong>Gesamt</strong></td><td class="sol-bits" style="padding-top:0.6rem; border-top:1px solid #334155;"><strong>${totalBits}</strong></td></tr>`;
+                table.innerHTML = html;
+            }
+
             // ── Level indicator ──
             function renderLevelIndicator() {
                 document.getElementById("level-indicator").innerHTML =
@@ -732,6 +1139,10 @@
 
             // ── Update loop ──
             function update() {
+                // Snapshot whether a saved solution existed BEFORE this call
+                const hadSolution =
+                    !!progressData.solutions[String(currentLevel)];
+
                 const codes = {};
                 let totalBits = 0;
                 let allFilled = true;
@@ -750,9 +1161,16 @@
                     }
                 });
 
+                // ── Total bits card ──
                 document.getElementById("total-bits").textContent =
                     totalBits || "0";
+                const optHintEl = document.getElementById("optimal-bits-hint");
+                optHintEl.textContent =
+                    allFilled && totalBits > 0
+                        ? `Minimum: ${optimalBits} Bits`
+                        : "";
 
+                // ── Prefix-free card ──
                 const prefixCard = document.getElementById("prefix-card");
                 const prefixStatus = document.getElementById("prefix-status");
                 const prefixConflict =
@@ -762,51 +1180,93 @@
                     ([, v]) => v.length > 0,
                 );
 
+                let prefixFree = false;
                 if (filledCodes.length < 2) {
                     prefixCard.className = "stat-card prefix-status";
                     prefixStatus.textContent = "—";
                     prefixConflict.textContent = "";
-                    return;
-                }
-
-                const result = isPrefixFree(codes);
-
-                const optHint = document.getElementById("optimality-hint");
-
-                if (result.free) {
-                    prefixCard.className = "stat-card prefix-status prefix-ok";
-                    prefixStatus.textContent = "Präfixfrei ✓";
-                    prefixConflict.textContent = "";
-
-                    // Show optimality feedback
-                    if (allFilled && totalBits > optimalBits) {
-                        optHint.textContent =
-                            "Die Kodierung ist zwar präfixfrei, aber es gibt eine optimalere Kodierung. Probier es weiter!";
-                    } else {
-                        optHint.textContent = "";
-                    }
                 } else {
-                    prefixCard.className = "stat-card prefix-status prefix-bad";
-                    prefixStatus.textContent = "Nicht präfixfrei ✗";
-                    const first = result.conflicts
-                        .slice(0, 3)
-                        .map(([a, b]) => `${a}↔${b}`)
-                        .join(", ");
-                    prefixConflict.textContent = `Konflikte: ${first}${result.conflicts.length > 3 ? " …" : ""}`;
-                    optHint.textContent = "";
+                    const result = isPrefixFree(codes);
+                    prefixFree = result.free;
+                    if (result.free) {
+                        prefixCard.className =
+                            "stat-card prefix-status prefix-ok";
+                        prefixStatus.textContent = "Präfixfrei ✓";
+                        prefixConflict.textContent = "";
+                    } else {
+                        prefixCard.className =
+                            "stat-card prefix-status prefix-bad";
+                        prefixStatus.textContent = "Nicht präfixfrei ✗";
+                        const first = result.conflicts
+                            .slice(0, 3)
+                            .map(([a, b]) => `${a}↔${b}`)
+                            .join(", ");
+                        prefixConflict.textContent = `Konflikte: ${first}${result.conflicts.length > 3 ? " …" : ""}`;
+                    }
                 }
 
-                // Check for optimal solution
-                if (
-                    allFilled &&
-                    result.free &&
-                    totalBits === optimalBits &&
-                    !hasCelebrated
-                ) {
+                // ── Optimality card ──
+                const optCard = document.getElementById("optimality-card");
+                const optStatus = document.getElementById("optimality-status");
+                const optIssues = document.getElementById("optimality-issues");
+                const savBtn = document.getElementById("save-solution-btn");
+
+                const isOptimal =
+                    allFilled && prefixFree && totalBits === optimalBits;
+
+                if (!allFilled) {
+                    optCard.className =
+                        "stat-card optimality-card optimality-incomplete";
+                    optStatus.textContent = "—";
+                    optIssues.textContent = "";
+                } else if (isOptimal) {
+                    optCard.className =
+                        "stat-card optimality-card optimality-ok";
+                    optStatus.textContent = "Optimal ✓";
+                    optIssues.textContent = "";
+                } else {
+                    optCard.className =
+                        "stat-card optimality-card optimality-bad";
+                    optStatus.textContent = "Nicht optimal";
+                    const issues = [];
+                    if (!prefixFree) issues.push("nicht präfixfrei");
+                    if (totalBits > optimalBits) issues.push("es geht kürzer");
+                    optIssues.textContent = issues.length
+                        ? `(${issues.join(", ")})`
+                        : "";
+                }
+
+                // ── Auto-save + celebrate on first optimal solve ──
+                if (isOptimal && !hasCelebrated) {
                     hasCelebrated = true;
                     levelSolved = true;
+                    markSolved(currentLevel); // saves codes to progressData
+                    // Show user solution immediately
+                    renderUserSolution(
+                        progressData.solutions[String(currentLevel)],
+                    );
+                    document
+                        .getElementById("user-solution-section")
+                        .classList.add("show");
                     showCongrats(totalBits);
                 }
+
+                // Save button: only shown for a *second* optimal (hadSolution = true before this call)
+                savBtn.classList.toggle("show", isOptimal && hadSolution);
+            }
+
+            // ── Save current optimal solution ──
+            function saveCurrentSolution() {
+                const userCodes = {};
+                symbols.forEach((s) => {
+                    userCodes[s.letter] = inputs[s.letter].value;
+                });
+                progressData.solutions[String(currentLevel)] = userCodes;
+                saveProgress();
+                renderUserSolution(userCodes);
+                document
+                    .getElementById("user-solution-section")
+                    .classList.add("show");
             }
 
             // ── Congrats ──
@@ -824,7 +1284,7 @@
                     btns.innerHTML = `<button onclick="closeOverlay()">Weiter experimentieren</button>`;
                 } else {
                     btns.innerHTML = `
-            <button onclick="nextLevel()">Nächste Aufgabe</button>
+            <button class="primary-pulse" onclick="nextLevel()">Nächste Aufgabe →</button>
             <button class="secondary" onclick="stayOnLevel()">Weiter experimentieren</button>
         `;
                 }
@@ -835,6 +1295,7 @@
                         .classList.add("show");
                     launchConfetti();
                 }, 300);
+                
             }
 
             function closeOverlay() {
@@ -863,8 +1324,9 @@
             function loadLevel() {
                 symbols = tasks[currentLevel].symbols;
                 optimalBits = computeOptimalBits(symbols);
-                hasCelebrated = false;
-                levelSolved = false;
+                const alreadySolved = solvedLevels.has(currentLevel);
+                hasCelebrated = alreadySolved;
+                levelSolved = alreadySolved;
                 currentWord = generateWord(symbols);
 
                 renderLevelIndicator();
@@ -872,19 +1334,49 @@
                 renderGrid();
                 renderSolution();
 
-                // Hide solution when switching levels
+                // Always hide Huffman solution and reset secret input
                 document
                     .getElementById("solution-section")
                     .classList.remove("show");
                 document.getElementById("help-input").value = "";
 
-                // Reset stats and UI
-                document.getElementById("total-bits").textContent = "0";
-                document.getElementById("prefix-card").className =
-                    "stat-card prefix-status";
-                document.getElementById("prefix-status").textContent = "—";
-                document.getElementById("prefix-conflict").textContent = "";
-                document.getElementById("optimality-hint").textContent = "";
+                // If previously solved: pre-fill inputs and show user's solution
+                const savedCodes =
+                    progressData.solutions[String(currentLevel)];
+                if (alreadySolved && savedCodes) {
+                    symbols.forEach((s) => {
+                        if (inputs[s.letter] && savedCodes[s.letter]) {
+                            inputs[s.letter].value = savedCodes[s.letter];
+                        }
+                    });
+                    update();
+                    renderUserSolution(savedCodes);
+                    document
+                        .getElementById("user-solution-section")
+                        .classList.add("show");
+                } else {
+                    document
+                        .getElementById("user-solution-section")
+                        .classList.remove("show");
+                    // Reset stats only when starting fresh
+                    document.getElementById("total-bits").textContent = "0";
+                    document.getElementById("optimal-bits-hint").textContent =
+                        "";
+                    document.getElementById("prefix-card").className =
+                        "stat-card prefix-status";
+                    document.getElementById("prefix-status").textContent = "—";
+                    document.getElementById("prefix-conflict").textContent = "";
+                    document.getElementById("optimality-card").className =
+                        "stat-card optimality-card optimality-incomplete";
+                    document.getElementById("optimality-status").textContent =
+                        "—";
+                    document.getElementById("optimality-issues").textContent =
+                        "";
+                    document
+                        .getElementById("save-solution-btn")
+                        .classList.remove("show");
+                }
+
                 document
                     .getElementById("next-level-btn")
                     .classList.remove("show");
@@ -1015,6 +1507,9 @@
             });
 
             // ── Start ──
+            loadProgress();
+            currentLevel = computeFrontierLevel();
+            if (currentLevel >= tasks.length) currentLevel = tasks.length - 1;
             loadLevel();
         </script>
     </body>
